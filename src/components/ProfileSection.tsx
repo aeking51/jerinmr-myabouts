@@ -2,8 +2,6 @@ import { User, MapPin, Mail, Phone, Linkedin, Download } from 'lucide-react';
 import { Button } from './ui/button';
 
 export function ProfileSection() {
-  const profileImage = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&auto=format&q=80";
-
   const handleResumeDownload = () => {
     // Simulate resume download
     console.log("wget resume.pdf");
@@ -13,20 +11,11 @@ export function ProfileSection() {
   return (
     <div className="space-y-4">
       <div className="border border-terminal-green p-4 bg-card/50">
-        <div className="flex items-start gap-4">
-          <div className="relative">
-            <img
-              src={profileImage}
-              alt="Jerin M R"
-              className="w-20 h-20 rounded border-2 border-terminal-green"
-            />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-terminal-green rounded-full animate-pulse"></div>
-          </div>
-          
-          <div className="flex-1 space-y-2">
+        <div className="space-y-4">
+          <div className="space-y-2">
             <div className="font-mono">
-              <div className="text-terminal-green text-lg font-bold">Jerin M R</div>
-              <div className="text-terminal-cyan">Entry-Level IT Professional</div>
+              <div className="text-terminal-green text-xl font-bold">Jerin M R</div>
+              <div className="text-terminal-cyan text-lg">Entry-Level IT Professional</div>
               <div className="text-terminal-gray">Networking & Server Administration</div>
             </div>
             
@@ -49,7 +38,6 @@ export function ProfileSection() {
               </div>
             </div>
           </div>
-        </div>
         
         <div className="mt-4 pt-4 border-t border-terminal-gray/30">
           <p className="text-sm text-foreground font-mono leading-relaxed">
@@ -69,6 +57,7 @@ export function ProfileSection() {
               wget resume.pdf
             </Button>
           </div>
+        </div>
         </div>
       </div>
     </div>
