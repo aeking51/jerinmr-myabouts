@@ -18,7 +18,7 @@ export function TerminalHeader({ onThemeToggle, isLight }: TerminalHeaderProps) 
     <div className="flex items-center justify-between bg-muted border-b border-border p-2 font-mono text-sm">
       <div className="flex items-center gap-2">
         <Terminal className="w-4 h-4 text-terminal-green" />
-        <span className="text-terminal-green">guest@jerinmr.tech</span>
+        <span className="text-terminal-green">guest@jerinmr.myabouts</span>
         <span className="text-terminal-gray">:</span>
         <span className="text-terminal-cyan">~/portfolio</span>
         <span className="text-terminal-gray">$</span>

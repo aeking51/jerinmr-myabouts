@@ -10,8 +10,8 @@ export function WelcomeAnimation({ onComplete }: WelcomeAnimationProps) {
 
   const steps = [
     {
-      command: "ssh guest@jerinmr.tech",
-      output: "Connecting to jerinmr.tech...\nConnection established.\nWelcome to Jerin M R's portfolio terminal!"
+      command: "ssh guest@jerinmr.myabouts",
+      output: "Connecting to jerinmr.myabouts...\nConnection established.\nWelcome to Jerin M R's portfolio terminal!"
     },
     {
       command: "whoami",

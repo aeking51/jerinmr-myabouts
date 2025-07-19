@@ -76,7 +76,7 @@ Best Times to Reach:
       
       <div className="border border-terminal-green p-4 bg-card/50">
         <div className="font-mono text-terminal-green mb-4">
-          guest@jerinmr.tech:~/contact$ nano message.txt
+          guest@jerinmr.myabouts:~/contact$ nano message.txt
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-4">

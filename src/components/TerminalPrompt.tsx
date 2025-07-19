@@ -36,7 +36,7 @@ export function TerminalPrompt({ command, output, delay = 0, showCursor = true }
   return (
     <div className="font-mono">
       <div className="flex items-center gap-2 text-terminal-green">
-        <span className="text-terminal-gray">guest@jerinmr.tech</span>
+        <span className="text-terminal-gray">guest@jerinmr.myabouts</span>
         <span className="text-terminal-gray">:</span>
         <span className="text-terminal-cyan">~/portfolio</span>
         <span className="text-terminal-gray">$</span>
