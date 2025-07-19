@@ -18,7 +18,21 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'mono': ['Fira Code', 'Ubuntu Mono', 'Courier New', 'monospace'],
+				'terminal': ['Ubuntu Mono', 'Fira Code', 'monospace'],
+			},
 			colors: {
+				'terminal': {
+					'green': 'hsl(var(--terminal-green))',
+					'green-bright': 'hsl(var(--terminal-green-bright))',
+					'amber': 'hsl(var(--terminal-amber))',
+					'cyan': 'hsl(var(--terminal-cyan))',
+					'red': 'hsl(var(--terminal-red))',
+					'blue': 'hsl(var(--terminal-blue))',
+					'magenta': 'hsl(var(--terminal-magenta))',
+					'gray': 'hsl(var(--terminal-gray))',
+				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -84,11 +98,26 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'terminal-blink': {
+					'0%, 50%': { opacity: '1' },
+					'51%, 100%': { opacity: '0' }
+				},
+				'terminal-typing': {
+					'from': { width: '0' },
+					'to': { width: '100%' }
+				},
+				'terminal-scan': {
+					'0%': { transform: 'translateY(-100%)' },
+					'100%': { transform: 'translateY(100vh)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'terminal-blink': 'terminal-blink 1s infinite',
+				'terminal-typing': 'terminal-typing 3s steps(40, end)',
+				'terminal-scan': 'terminal-scan 2s linear infinite'
 			}
 		}
 	},
