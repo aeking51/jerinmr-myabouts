@@ -13,12 +13,12 @@ export function TerminalNavigation({ activeSection, onSectionChange }: Navigatio
   ];
 
   return (
-    <div className="flex flex-wrap gap-2 p-4 bg-muted border-b border-border">
+    <div className="flex flex-wrap gap-1 sm:gap-2 p-2 sm:p-4 bg-muted border-b border-border overflow-x-auto">
       {commands.map((cmd) => (
         <button
           key={cmd.id}
           onClick={() => onSectionChange(cmd.id)}
-          className={`px-3 py-1 rounded font-mono text-sm transition-colors ${
+          className={`px-2 sm:px-3 py-1 rounded font-mono text-xs sm:text-sm transition-colors whitespace-nowrap ${
             activeSection === cmd.id
               ? 'bg-terminal-green text-background'
               : 'text-terminal-gray hover:text-terminal-green hover:bg-secondary'

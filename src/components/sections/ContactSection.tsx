@@ -68,8 +68,8 @@ Best Times to Reach:
         showCursor={false}
       />
       
-      <div className="border border-terminal-green p-4 bg-card/50">
-        <div className="font-mono text-terminal-green mb-4">
+      <div className="border border-terminal-green p-3 sm:p-4 bg-card/50">
+        <div className="font-mono text-terminal-green mb-4 text-xs sm:text-sm break-all">
           guest@jerinmr.myabouts:~/contact$ nano message.txt
         </div>
         
@@ -133,36 +133,36 @@ Best Times to Reach:
         </form>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
         <a
           href="mailto:jerinmr@hotmail.com"
-          className="flex items-center gap-2 p-3 border border-terminal-cyan rounded bg-card/30 hover:bg-terminal-cyan hover:text-background transition-colors"
+          className="flex items-center justify-center gap-1 sm:gap-2 p-2 sm:p-3 border border-terminal-cyan rounded bg-card/30 hover:bg-terminal-cyan hover:text-background transition-colors"
         >
-          <Mail className="w-4 h-4" />
-          <span className="font-mono text-sm">Email</span>
+          <Mail className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+          <span className="font-mono text-xs sm:text-sm">Email</span>
         </a>
         
         <a
           href="tel:+918848158987"
-          className="flex items-center gap-2 p-3 border border-terminal-blue rounded bg-card/30 hover:bg-terminal-blue hover:text-background transition-colors"
+          className="flex items-center justify-center gap-1 sm:gap-2 p-2 sm:p-3 border border-terminal-blue rounded bg-card/30 hover:bg-terminal-blue hover:text-background transition-colors"
         >
-          <Phone className="w-4 h-4" />
-          <span className="font-mono text-sm">Call</span>
+          <Phone className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+          <span className="font-mono text-xs sm:text-sm">Call</span>
         </a>
         
         <a
           href="https://linkedin.com/in/jerinmr51"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 p-3 border border-terminal-magenta rounded bg-card/30 hover:bg-terminal-magenta hover:text-background transition-colors"
+          className="flex items-center justify-center gap-1 sm:gap-2 p-2 sm:p-3 border border-terminal-magenta rounded bg-card/30 hover:bg-terminal-magenta hover:text-background transition-colors"
         >
-          <Linkedin className="w-4 h-4" />
-          <span className="font-mono text-sm">LinkedIn</span>
+          <Linkedin className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+          <span className="font-mono text-xs sm:text-sm">LinkedIn</span>
         </a>
         
-        <div className="flex items-center gap-2 p-3 border border-terminal-gray rounded bg-card/30 text-terminal-gray">
-          <MapPin className="w-4 h-4" />
-          <span className="font-mono text-sm">Thrissur, KL</span>
+        <div className="flex items-center justify-center gap-1 sm:gap-2 p-2 sm:p-3 border border-terminal-gray rounded bg-card/30 text-terminal-gray">
+          <MapPin className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+          <span className="font-mono text-xs sm:text-sm">Thrissur, KL</span>
         </div>
       </div>
     </div>

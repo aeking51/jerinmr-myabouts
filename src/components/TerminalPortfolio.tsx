@@ -39,8 +39,8 @@ export function TerminalPortfolio() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-6xl mx-auto border border-border bg-card shadow-2xl">
+    <div className="min-h-screen bg-background text-foreground px-2 sm:px-4">
+      <div className="max-w-6xl mx-auto border border-border bg-card shadow-2xl min-h-screen sm:min-h-0">
         <TerminalHeader 
           onThemeToggle={() => setIsLight(!isLight)} 
           isLight={isLight} 
@@ -53,13 +53,14 @@ export function TerminalPortfolio() {
           />
         )}
         
-        <div className="p-6 min-h-[600px] overflow-auto">
+        <div className="p-3 sm:p-6 min-h-[400px] sm:min-h-[600px] overflow-auto">
           {renderSection()}
         </div>
         
-        <div className="px-6 py-2 bg-muted border-t border-border">
-          <div className="flex items-center justify-between text-xs font-mono text-terminal-gray">
-            <span>Terminal ready - Type 'help' for commands</span>
+        <div className="px-3 sm:px-6 py-2 bg-muted border-t border-border">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs font-mono text-terminal-gray gap-2 sm:gap-0">
+            <span className="hidden sm:inline">Terminal ready - Type 'help' for commands</span>
+            <span className="sm:hidden">Terminal ready</span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 bg-terminal-green rounded-full animate-pulse"></span>
               Connected
