@@ -31,12 +31,6 @@ Contact Information:
 │   ├── GitHub    : github.com/jerinmr (coming soon)
 │   └── Portfolio : jerinmr.tech
 │
-├── Availability
-│   ├── Status    : Available for full-time opportunities
-│   ├── Preferred : Networking, Server Admin, Cloud roles
-│   ├── Location  : Open to relocation within India
-│   └── Remote    : Available for remote/hybrid work
-│
 └── Response Time
     ├── Email     : Within 24 hours
     ├── Phone     : Mon-Fri 9AM-6PM IST

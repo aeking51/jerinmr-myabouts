@@ -11,7 +11,7 @@ export function ExperienceSection() {
 
 [2024-10-01 TO 2025-04-30] PERFECT GROUP - Service Trainee
 Location: Ernakulam, Kerala
-Status: Current Position
+
 
 ╭─ Role Overview ───────────────────────────────────────────────────╮
 │ Comprehensive hands-on training in enterprise IT infrastructure  │

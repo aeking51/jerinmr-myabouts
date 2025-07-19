@@ -7,7 +7,7 @@ export function AboutSection() {
 │  Name: Jerin M R                                                   │
 │  Role: Entry-Level IT Professional                                 │
 │  Focus: Networking, Server Administration & Cloud Infrastructure   │
-│  Status: Currently enhancing skills in enterprise environments     │
+│                                                                    │
 │                                                                    │
 ╰────────────────────────────────────────────────────────────────────╯
 
