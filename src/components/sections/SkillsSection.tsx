@@ -16,7 +16,8 @@ export function SkillsSection() {
 │       ├── User Account & Group Management ████████████████████ 85%
 │       ├── Partition & File System Management ████████████████ 80%
 │       ├── Service Management      ████████████████████ 85%
-│       └── Network Profile Management ████████████████  70%
+│       ├── Network Profile Management ████████████████  70%
+│       └── Security (SELinux, Antivirus, System FW) ███████████ 75%
 │
 ├── Networking
 │   ├── Cisco Technologies
