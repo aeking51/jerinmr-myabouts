@@ -5,7 +5,7 @@ export function SkillsSection() {
 ├── Systems Administration
 │   ├── Operating Systems
 │   │   ├── Linux (Ubuntu, CentOS, RHEL-based, OpenSUSE) ████████████████████ 85%
-│   │   └── Windows Server 2022     ████████████████████ 80%
+│   │   └── Windows Server 2022 and Windows Client OS ████████████████████ 80%
 │   │
 │   ├── Scripting & Automation
 │   │   ├── Bash Scripting          ████████████████████ 75%
