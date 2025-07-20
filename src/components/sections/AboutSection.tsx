@@ -32,6 +32,11 @@ Personal Philosophy:
 problems. I believe in continuous learning, hands-on experience, and 
 building reliable, secure systems that users can depend on."
 
+Hobbies:
+• Reading books
+• Gaming
+• Learning about universe
+
 Interests:
 • Network security and ethical hacking
 • Open-source technologies and Linux systems
