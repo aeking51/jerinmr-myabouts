@@ -4,7 +4,7 @@ export function SkillsSection() {
   const skillsOutput = `
 ├── Systems Administration
 │   ├── Operating Systems
-│   │   ├── Linux (Ubuntu, CentOS) ████████████████████ 85%
+│   │   ├── Linux (Ubuntu, CentOS, RHEL-based, OpenSUSE) ████████████████████ 85%
 │   │   └── Windows Server 2022     ████████████████████ 80%
 │   │
 │   ├── Scripting & Automation
