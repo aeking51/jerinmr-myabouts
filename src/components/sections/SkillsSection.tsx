@@ -61,12 +61,6 @@ export function SkillsSection() {
         ├── Network Diagrams         ████████████████     70%
         └── Issue Tracking           ████████████████████ 80%
 
-Certifications in Progress:
-□ CompTIA A+ (Core 1 & 2)
-□ CCNA (200-301)
-□ RHCE (Red Hat Certified Engineer)
-□ AWS Cloud Practitioner
-
 Professional Development:
 • Hands-on lab environments for practical learning
 • Contributing to open-source networking projects  
