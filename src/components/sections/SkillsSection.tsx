@@ -5,8 +5,7 @@ export function SkillsSection() {
 ├── Systems Administration
 │   ├── Operating Systems
 │   │   ├── Linux (Ubuntu, CentOS) ████████████████████ 85%
-│   │   ├── Windows Server 2022     ████████████████████ 80%
-│   │   └── VMware vSphere          ██████████████       70%
+│   │   └── Windows Server 2022     ████████████████████ 80%
 │   │
 │   ├── Scripting & Automation
 │   │   ├── Bash Scripting          ████████████████████ 75%
@@ -26,7 +25,7 @@ export function SkillsSection() {
 │   │   └── Switch Configuration    ████████████████████ 88%
 │   │
 │   ├── Routing Protocols
-│   │   ├── OSPF                    ████████████████████ 75%
+│   │   ├── OSPF                    ████████████████████ 85%
 │   │   ├── EIGRP                   ████████████████████ 70%
 │   │   └── Static Routing          ████████████████████ 90%
 │   │
@@ -42,25 +41,20 @@ export function SkillsSection() {
 │
 ├── Cloud Technologies
 │   ├── Amazon Web Services (AWS)
-│   │   ├── EC2 (Compute)           ████████████████     70%
-│   │   ├── S3 (Storage)            ████████████████     65%
-│   │   ├── IAM (Identity)          ████████████████     70%
-│   │   └── VPC (Networking)        ██████████████       60%
+│   │   ├── EC2 (Compute)           ████████████████████ 80%
+│   │   ├── S3 (Storage)            ████████████████████ 75%
+│   │   ├── IAM (Identity)          ████████████████████ 80%
+│   │   └── VPC (Networking)        ████████████████     70%
 │   │
 │   └── Virtualization
-│       ├── VMware Workstation      ████████████████████ 75%
-│       └── VirtualBox              ████████████████████ 80%
+│       ├── VMware Workstation      ████████████████████ 85%
+│       └── VirtualBox              ████████████████████ 90%
 │
 └── Troubleshooting & Monitoring
     ├── System Analysis
     │   ├── Log Analysis             ████████████████████ 85%
     │   ├── Performance Monitoring   ████████████████     70%
     │   └── Network Diagnostics      ████████████████████ 80%
-    │
-    ├── Command Line Tools
-    │   ├── htop, ps, netstat        ████████████████████ 90%
-    │   ├── tcpdump, wireshark       ████████████████     65%
-    │   └── lsof, ss, iptables       ████████████████████ 75%
     │
     └── Documentation
         ├── Technical Writing        ████████████████████ 85%
