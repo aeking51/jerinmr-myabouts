@@ -6,7 +6,7 @@ export function AboutSection() {
 │                                                                    │
 │  Name: Jerin M R                                                   │
 │  Role: Entry-Level IT Professional                                 │
-│  Focus: Networking, Server Administration & Cloud Infrastructure   │
+│  Focus: Networking, Server Administration, Cloud Infrastructure & Cybersecurity   │
 │                                                                    │
 │                                                                    │
 ╰────────────────────────────────────────────────────────────────────╯
@@ -40,8 +40,6 @@ Hobbies:
 Interests:
 • Network security and ethical hacking
 • Open-source technologies and Linux systems
-• Cloud infrastructure automation
-• IoT and embedded systems
 • Contributing to tech communities
 `;
 
