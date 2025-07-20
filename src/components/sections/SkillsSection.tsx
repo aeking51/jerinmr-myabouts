@@ -5,8 +5,6 @@ export function SkillsSection() {
 ├── Systems Administration
 │   ├── Operating Systems
 │   │   ├── Linux (Ubuntu, CentOS) ████████████████████ 85%
-│   │   ├── RHEL-based Systems     ████████████████████ 80%
-│   │   ├── OpenSUSE               ████████████████     70%
 │   │   └── Windows Server 2022     ████████████████████ 80%
 │   │
 │   ├── Scripting & Automation
@@ -14,10 +12,10 @@ export function SkillsSection() {
 │   │   ├── PowerShell              ████████████████     65%
 │   │   └── Python (Basic)          ██████████           50%
 │   │
-│   └── System Administration
-│       └── User & Resource Management ████████████████████ 85%
-│           • Manage user accounts, groups, file system permissions, disk quotas, and logical volume management
-│             (LVM), ensuring secure multi-user environments.
+│   └── System Tools
+│       ├── LVM, rsync, SELinux     ████████████████████ 80%
+│       ├── cron, Task Scheduler    ████████████████████ 85%
+│       └── System Hardening        ████████████████     70%
 │
 ├── Networking
 │   ├── Cisco Technologies
