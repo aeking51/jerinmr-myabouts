@@ -12,10 +12,11 @@ export function SkillsSection() {
 │   │   ├── PowerShell              ████████████████     65%
 │   │   └── Python (Basic)          ██████████           50%
 │   │
-│   └── System Tools
-│       ├── LVM, rsync, SELinux     ████████████████████ 80%
-│       ├── cron, Task Scheduler    ████████████████████ 85%
-│       └── System Hardening        ████████████████     70%
+│   └── System Management
+│       ├── User Account & Group Management ████████████████████ 85%
+│       ├── Partition & File System Management ████████████████ 80%
+│       ├── Service Management      ████████████████████ 85%
+│       └── Network Profile Management ████████████████  70%
 │
 ├── Networking
 │   ├── Cisco Technologies
