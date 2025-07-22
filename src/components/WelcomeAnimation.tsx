@@ -29,8 +29,19 @@ drwxr-xr-x  3 root  root   4096 Nov 15 14:00 ..
 -rw-r--r--  1 jerin jerin  2048 Nov 15 14:30 resume.pdf`
     },
     {
-      command: "cat welcome.txt",
-      output: `██╗  ██╗███████╗██████╗ ██╗███╗   ██╗    ███╗   ███╗    ██████╗ 
+      command: "show ip route",
+      output: `Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+
+Gateway of last resort is 192.168.1.1 to network 0.0.0.0
+
+S*    0.0.0.0/0 [1/0] via 192.168.1.1
+C     192.168.1.0/24 is directly connected, GigabitEthernet0/0
+L     192.168.1.100/32 is directly connected, GigabitEthernet0/0
+C     10.0.0.0/8 is directly connected, Serial0/0/0
+L     10.0.0.1/32 is directly connected, Serial0/0/0
+
+██╗  ██╗███████╗██████╗ ██╗███╗   ██╗    ███╗   ███╗    ██████╗ 
 ██║  ██║██╔════╝██╔══██╗██║████╗  ██║    ████╗ ████║    ██╔══██╗
 ███████║█████╗  ██████╔╝██║██╔██╗ ██║    ██╔████╔██║    ██████╔╝
 ██╔══██║██╔══╝  ██╔══██╗██║██║╚██╗██║    ██║╚██╔╝██║    ██╔══██╗
