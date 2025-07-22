@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Terminal, User, Sun, Moon } from 'lucide-react';
+import { Terminal, User, Sun, Moon, Eye } from 'lucide-react';
 import { Button } from './ui/button';
 
 interface TerminalHeaderProps {
   onThemeToggle: () => void;
-  isLight: boolean;
+  theme: 'dark' | 'light' | 'eye-comfort';
 }
 
-export function TerminalHeader({ onThemeToggle, isLight }: TerminalHeaderProps) {
+export function TerminalHeader({ onThemeToggle, theme }: TerminalHeaderProps) {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -31,14 +31,23 @@ export function TerminalHeader({ onThemeToggle, isLight }: TerminalHeaderProps) 
           <span>{time.toLocaleTimeString()}</span>
         </div>
         
-        <Button
-          onClick={onThemeToggle}
-          variant="ghost"
-          size="sm"
-          className="p-1 sm:p-2 text-terminal-gray hover:text-terminal-green h-auto"
-        >
-          {isLight ? <Sun className="w-3 h-3 sm:w-4 sm:h-4" /> : <Moon className="w-3 h-3 sm:w-4 sm:h-4" />}
-        </Button>
+        <div className="flex items-center">
+          <Button
+            onClick={onThemeToggle}
+            variant="ghost"
+            size="sm"
+            className="p-1 sm:p-2 text-terminal-gray hover:text-terminal-green h-auto"
+            title={theme === 'dark' ? 'Switch to light mode' : theme === 'light' ? 'Switch to eye comfort mode' : 'Switch to dark mode'}
+          >
+            {theme === 'light' ? (
+              <Sun className="w-3 h-3 sm:w-4 sm:h-4" />
+            ) : theme === 'eye-comfort' ? (
+              <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+            ) : (
+              <Moon className="w-3 h-3 sm:w-4 sm:h-4" />
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ import { ContactSection } from './sections/ContactSection';
 export function TerminalPortfolio() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-  const [isLight, setIsLight] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light' | 'eye-comfort'>('dark');
   const [visitorIP, setVisitorIP] = useState<string>('');
 
   useEffect(() => {
@@ -23,8 +23,16 @@ export function TerminalPortfolio() {
   }, []);
 
   useEffect(() => {
-    document.body.className = isLight ? 'light' : '';
-  }, [isLight]);
+    document.body.className = theme;
+  }, [theme]);
+
+  const handleThemeToggle = () => {
+    setTheme(current => 
+      current === 'dark' ? 'light' : 
+      current === 'light' ? 'eye-comfort' : 
+      'dark'
+    );
+  };
 
   const renderSection = () => {
     if (!isLoaded) {
@@ -51,8 +59,8 @@ export function TerminalPortfolio() {
     <div className="min-h-screen bg-background text-foreground px-2 sm:px-4">
       <div className="max-w-6xl mx-auto border border-border bg-card shadow-2xl min-h-screen sm:min-h-0">
         <TerminalHeader 
-          onThemeToggle={() => setIsLight(!isLight)} 
-          isLight={isLight} 
+          onThemeToggle={handleThemeToggle} 
+          theme={theme}
         />
         
         {isLoaded && (
