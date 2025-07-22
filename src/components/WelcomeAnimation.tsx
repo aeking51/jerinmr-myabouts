@@ -29,17 +29,29 @@ drwxr-xr-x  3 root  root   4096 Nov 15 14:00 ..
 -rw-r--r--  1 jerin jerin  2048 Nov 15 14:30 resume.pdf`
     },
     {
-      command: "cat welcome.txt",
-      output: `██╗  ██╗███████╗██████╗ ██╗███╗   ██╗    ███╗   ███╗    ██████╗ 
-██║  ██║██╔════╝██╔══██╗██║████╗  ██║    ████╗ ████║    ██╔══██╗
-███████║█████╗  ██████╔╝██║██╔██╗ ██║    ██╔████╔██║    ██████╔╝
-██╔══██║██╔══╝  ██╔══██╗██║██║╚██╗██║    ██║╚██╔╝██║    ██╔══██╗
-██║  ██║███████╗██║  ██║██║██║ ╚████║    ██║ ╚═╝ ██║    ██║  ██║
-╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝    ╚═╝     ╚═╝    ╚═╝  ╚═╝
-
-Entry-Level IT Professional | Networking & Server Administration
-Specializing in Cisco, Linux, AWS & Network Security
-
+      command: "neofetch",
+      output: `                   -\`                    guest@jerinmr.myabouts 
+                  .o+\`                   ----------------------------- 
+                 \`ooo/                   OS: Ubuntu 22.04.3 LTS x86_64 
+                \`+oooo:                  Host: Portfolio Terminal v2.1 
+               \`+oooooo:                 Kernel: 5.15.0-88-generic 
+               -+oooooo+:                Uptime: 2 days, 14 hours, 32 mins 
+             \`/:-:++oooo+:               Packages: 1847 (dpkg), 15 (snap) 
+            \`/++++/+++++++:              Shell: bash 5.1.16 
+           \`/++++++++++++++:             Resolution: 1920x1080 
+          \`/+++ooooooooooooo/\`           DE: Terminal Portfolio Interface 
+         ./ooosssso++osssssso+\`          WM: Tmux 3.2a 
+        .oossssso-\`\`\`\`/ossssss+\`         Theme: Matrix Green [GTK3] 
+       -osssssso.      :ssssssso.        Icons: Terminal Classic 
+      :osssssss/        osssso+++.       Terminal: portfolio-term 
+     /ossssssss/        +ssssooo/-       CPU: Intel i7-12700K (16) @ 3.60GHz 
+   \`/ossssso+/:-        -:/+osssso+-     GPU: NVIDIA GeForce RTX 3070 
+  \`+sso+:-\`                 \`.-/+oso:    Memory: 2847MiB / 32768MiB 
+ \`++:.                           \`-/+/
+ .\`                                 \`/   Role: Entry-Level IT Professional
+                                         Focus: Networking & Server Administration
+                                         Skills: Cisco, Linux, AWS, Cybersecurity
+                                         
 Type 'help' for available commands or click the navigation above.`
     }
   ];
