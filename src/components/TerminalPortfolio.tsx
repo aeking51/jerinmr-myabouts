@@ -12,6 +12,15 @@ export function TerminalPortfolio() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [isLight, setIsLight] = useState(false);
+  const [visitorIP, setVisitorIP] = useState<string>('');
+
+  useEffect(() => {
+    // Fetch visitor IP
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+      .then(data => setVisitorIP(data.ip))
+      .catch(() => setVisitorIP('127.0.0.1'));
+  }, []);
 
   useEffect(() => {
     document.body.className = isLight ? 'light' : '';
@@ -63,7 +72,7 @@ export function TerminalPortfolio() {
             <span className="sm:hidden">Terminal ready</span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 bg-terminal-green rounded-full animate-pulse"></span>
-              Connected
+              Connected {visitorIP && `- IP: ${visitorIP}`}
             </span>
           </div>
         </div>
