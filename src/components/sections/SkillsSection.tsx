@@ -41,6 +41,17 @@ export function SkillsSection() {
 │       ├── TCP/IP Stack            ████████████████████ 85%
 │       └── DNS, DHCP Configuration ████████████████████ 80%
 │
+├── Computer Hardware
+│   ├── Hardware Assembly
+│   │   ├── PC Assembly and Disassembly ████████████████████ 85%
+│   │   ├── BIOS/UEFI Configuration     ████████████████████ 80%
+│   │   └── Hardware Troubleshooting and Diagnostics ████████████████ 75%
+│   │
+│   ├── Components & Peripherals
+│   │   ├── Peripheral Installation and Configuration ████████████████ 70%
+│   │   ├── Storage Devices (HDD, SSD, NVMe) ████████████████████ 85%
+│   │   └── Power Supply               ████████████████████ 80%
+│
 ├── Cloud Technologies
 │   ├── Amazon Web Services (AWS)
 │   │   ├── EC2 (Compute)           ████████████████████ 80%
