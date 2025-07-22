@@ -31,31 +31,6 @@ Key Responsibilities:
   ├── Printer network integration and troubleshooting
   └── Hardware inventory management and asset tracking
 
-▸ System Administration
-  ├── User account management in domain environments
-  ├── Software deployment and license management
-  ├── System monitoring and basic performance optimization
-  └── Backup verification and disaster recovery testing
-
-▸ Technical Documentation
-  ├── Created network diagrams using Visio
-  ├── Maintained troubleshooting knowledge base
-  ├── Developed standard operating procedures
-  └── Generated weekly system health reports
-
-Technologies Used:
-• Cisco Catalyst switches (2960, 3560 series)
-• Windows Server 2019/2022 Active Directory
-• Network monitoring tools (PRTG, SolarWinds)
-• HP/Dell enterprise hardware
-• VMware vSphere infrastructure
-
-Achievements:
-✓ Reduced network downtime by 40% through proactive monitoring
-✓ Streamlined hardware deployment process, saving 2 hours per setup
-✓ Created comprehensive network documentation for future reference
-✓ Successfully completed 50+ hardware installations without incidents
-
 Learning Outcomes:
 • Gained practical experience with enterprise-grade equipment
 • Developed troubleshooting methodology for complex issues
@@ -85,12 +60,6 @@ Practical Labs:
 • Industry-standard equipment training
 • Capstone project: Multi-site network design
 
-Future Goals:
-□ Complete CCNA certification by Q2 2025
-□ Gain AWS Cloud Practitioner certification
-□ Pursue Linux+ certification
-□ Specialize in network security and penetration testing
-□ Contribute to open-source networking projects
 `;
 
   return (
