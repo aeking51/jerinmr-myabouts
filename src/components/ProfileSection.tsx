@@ -1,12 +1,6 @@
-import { User, MapPin, Mail, Phone, Linkedin, Download } from 'lucide-react';
-import { Button } from './ui/button';
+import { User, MapPin, Mail, Phone, Linkedin } from 'lucide-react';
 
 export function ProfileSection() {
-  const handleResumeDownload = () => {
-    // Simulate resume download
-    console.log("wget resume.pdf");
-    alert("Downloading resume.pdf...\n[====================] 100%\nDownload complete!");
-  };
 
   return (
     <div className="space-y-4">
@@ -46,17 +40,6 @@ export function ProfileSection() {
             across IT environments.
           </p>
           
-          <div className="mt-4">
-            <Button
-              onClick={handleResumeDownload}
-              variant="outline"
-              size="sm"
-              className="font-mono text-terminal-green border-terminal-green hover:bg-terminal-green hover:text-background text-xs sm:text-sm"
-            >
-              <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-              wget resume.pdf
-            </Button>
-          </div>
         </div>
         </div>
       </div>
