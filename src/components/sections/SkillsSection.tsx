@@ -34,7 +34,10 @@ export function SkillsSection() {
 │   └── Protocols & Standards
 │       ├── IPv4/IPv6 Subnetting    ████████████████████ 90%
 │       ├── TCP/IP Stack            ████████████████████ 85%
-│       └── DNS, DHCP Configuration ████████████████████ 80%
+│       ├── DNS, DHCP Configuration ████████████████████ 80%
+│       ├── HSRP (Hot Standby)      ████████████████     70%
+│       ├── GLBP (Gateway Load)     ███████████          55%
+│       └── VRRP (Virtual Router)   ████████████         60%
 │
 ├── Computer Hardware
 │   ├── PC Assembly and Disassembly ████████████████████ 85%
