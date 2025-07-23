@@ -13,13 +13,20 @@ export function TerminalPortfolio() {
   const [activeSection, setActiveSection] = useState('home');
   const [theme, setTheme] = useState<'dark' | 'light' | 'eye-comfort'>('dark');
   const [visitorIP, setVisitorIP] = useState<string>('');
+  const [visitorLocation, setVisitorLocation] = useState<string>('');
 
   useEffect(() => {
-    // Fetch visitor IP
-    fetch('https://api.ipify.org?format=json')
+    // Fetch visitor IP and location
+    fetch('https://ipapi.co/json/')
       .then(response => response.json())
-      .then(data => setVisitorIP(data.ip))
-      .catch(() => setVisitorIP('127.0.0.1'));
+      .then(data => {
+        setVisitorIP(data.ip || '127.0.0.1');
+        setVisitorLocation(data.city && data.country ? `${data.city}, ${data.country}` : '');
+      })
+      .catch(() => {
+        setVisitorIP('127.0.0.1');
+        setVisitorLocation('');
+      });
   }, []);
 
   useEffect(() => {
@@ -76,11 +83,9 @@ export function TerminalPortfolio() {
         
         <div className="px-3 sm:px-6 py-2 bg-muted border-t border-border">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs font-mono text-terminal-gray gap-2 sm:gap-0">
-            <span className="hidden sm:inline">Terminal ready - Type 'help' for commands</span>
-            <span className="sm:hidden">Terminal ready</span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 bg-terminal-green rounded-full animate-pulse"></span>
-              Connected {visitorIP && `- IP: ${visitorIP}`}
+              Connected {visitorIP && `- IP: ${visitorIP}`} {visitorLocation && `- ${visitorLocation}`}
             </span>
           </div>
         </div>
