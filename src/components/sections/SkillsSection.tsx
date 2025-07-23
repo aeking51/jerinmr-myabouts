@@ -31,11 +31,6 @@ export function SkillsSection() {
 │   │   ├── EIGRP                   ████████████████████ 70%
 │   │   └── Static Routing          ████████████████████ 90%
 │   │
-│   ├── Network Security
-│   │   ├── NAT Configuration       ████████████████████ 85%
-│   │   ├── ACLs (Access Lists)     ████████████████████ 80%
-│   │   └── Firewall Basics         ████████████████     65%
-│   │
 │   └── Protocols & Standards
 │       ├── IPv4/IPv6 Subnetting    ████████████████████ 90%
 │       ├── TCP/IP Stack            ████████████████████ 85%

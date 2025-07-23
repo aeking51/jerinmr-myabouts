@@ -52,13 +52,10 @@ Core Modules:
 • CCNA (Cisco Certified Network Associate)
 • RHCE (Red Hat Certified Engineer)
 • AWS Cloud Practitioner & Associate
-• Network Security & Ethical Hacking
-
 Practical Labs:
 • 200+ hours of hands-on lab work
 • Real-world scenario simulations
 • Industry-standard equipment training
-• Capstone project: Multi-site network design
 
 `;
 
