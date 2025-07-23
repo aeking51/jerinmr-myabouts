@@ -14,37 +14,42 @@ export function ContactSection() {
   const contactOutput = `
 ┌─ WHOIS LOOKUP RESULT ─────────────────────────────────────────────┐
 │                                                                   │
-│  Domain: jerinmr.tech                                             │
-│  Owner: Jerin M R                                                 │
-│  Type: Personal Portfolio & Professional Contact                  │
+│  Query: jerinmr                                                   │
+│  Registrant: Jerin M R                                            │
+│  Status: Active Professional Profile                              │
+│  Last Updated: $(date)                                            │
 │                                                                   │
 └───────────────────────────────────────────────────────────────────┘
 
-Contact Information:
-├── Primary Contact
+Registry Information:
+├── Contact Details
 │   ├── Email     : jerinmr@hotmail.com
 │   ├── Phone     : +91 8848158987
-│   └── Location  : Thrissur, Kerala, India
+│   ├── Location  : Thrissur, Kerala, India
+│   └── Timezone  : IST (UTC+5:30)
 │
 ├── Professional Networks
-│   ├── LinkedIn  : linkedin.com/in/jerinmr51
-│   ├── GitHub    : github.com/jerinmr (coming soon)
-│   └── Portfolio : jerinmr.tech
+│   └── LinkedIn  : linkedin.com/in/jerinmr51
 │
-└── Response Time
-    ├── Email     : Within 24 hours
-    ├── Phone     : Mon-Fri 9AM-6PM IST
-    └── LinkedIn  : Within 12 hours
+├── Availability
+│   ├── Email     : 24/7 (Response within 24 hours)
+│   ├── Phone     : Mon-Fri 9AM-6PM IST
+│   └── LinkedIn  : 24/7 (Response within 12 hours)
+│
+└── Service Status
+    ├── Connection : Active
+    ├── Response   : Optimal
+    └── Uptime     : 99.9%
 
 Preferred Contact Methods:
-1. Email (Professional inquiries)
-2. LinkedIn (Networking & opportunities)  
-3. Phone (Urgent matters only)
+1. Email (Professional inquiries & opportunities)
+2. LinkedIn (Professional networking)
+3. Phone (Urgent matters - business hours only)
 
-Best Times to Reach:
+Optimal Contact Times:
 • Morning: 9:00 AM - 12:00 PM IST
 • Evening: 6:00 PM - 8:00 PM IST
-• Weekends: Limited availability
+• Note: Weekend availability limited
 `;
 
   const handleSubmit = (e: React.FormEvent) => {
