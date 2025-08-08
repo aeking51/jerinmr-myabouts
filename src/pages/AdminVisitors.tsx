@@ -1,0 +1,246 @@
+import React, { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Calendar, Globe, Monitor, Smartphone, Tablet, MapPin, Clock, Eye, Users, Activity } from 'lucide-react';
+
+interface Visitor {
+  id: string;
+  ip_address: string;
+  user_agent: string;
+  device_type: string;
+  browser: string;
+  operating_system: string;
+  screen_resolution: string;
+  timezone: string;
+  language: string;
+  referrer: string;
+  page_url: string;
+  visited_at: string;
+  session_id: string;
+  is_mobile: boolean;
+  country: string;
+  city: string;
+}
+
+interface VisitorStats {
+  totalVisitors: number;
+  uniqueIPs: number;
+  mobileUsers: number;
+  desktopUsers: number;
+}
+
+const AdminVisitors = () => {
+  const [visitors, setVisitors] = useState<Visitor[]>([]);
+  const [stats, setStats] = useState<VisitorStats>({
+    totalVisitors: 0,
+    uniqueIPs: 0,
+    mobileUsers: 0,
+    desktopUsers: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchVisitors();
+  }, []);
+
+  const fetchVisitors = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('visitors')
+        .select('*')
+        .order('visited_at', { ascending: false })
+        .limit(100);
+
+      if (error) throw error;
+
+      setVisitors(data || []);
+      
+      // Calculate stats
+      const uniqueIPs = new Set(data?.map(v => v.ip_address)).size;
+      const mobileUsers = data?.filter(v => v.is_mobile).length || 0;
+      const desktopUsers = (data?.length || 0) - mobileUsers;
+
+      setStats({
+        totalVisitors: data?.length || 0,
+        uniqueIPs,
+        mobileUsers,
+        desktopUsers
+      });
+    } catch (error) {
+      console.error('Error fetching visitors:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getDeviceIcon = (deviceType: string) => {
+    switch (deviceType.toLowerCase()) {
+      case 'mobile':
+        return <Smartphone className="h-4 w-4" />;
+      case 'tablet':
+        return <Tablet className="h-4 w-4" />;
+      default:
+        return <Monitor className="h-4 w-4" />;
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString();
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">Loading visitor data...</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background p-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <div className="text-center space-y-2">
+          <h1 className="text-4xl font-bold text-foreground">Visitor Analytics</h1>
+          <p className="text-muted-foreground">Track and analyze your website visitors</p>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Visitors</CardTitle>
+              <Eye className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalVisitors}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Unique IPs</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.uniqueIPs}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Mobile Users</CardTitle>
+              <Smartphone className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.mobileUsers}</div>
+              <p className="text-xs text-muted-foreground">
+                {stats.totalVisitors > 0 ? Math.round((stats.mobileUsers / stats.totalVisitors) * 100) : 0}% of total
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Desktop Users</CardTitle>
+              <Monitor className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.desktopUsers}</div>
+              <p className="text-xs text-muted-foreground">
+                {stats.totalVisitors > 0 ? Math.round((stats.desktopUsers / stats.totalVisitors) * 100) : 0}% of total
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Visitors Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5" />
+              Recent Visitors
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {visitors.map((visitor) => (
+                <div key={visitor.id} className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {getDeviceIcon(visitor.device_type)}
+                      <Badge variant="secondary">{visitor.device_type}</Badge>
+                      <Badge variant="outline">{visitor.browser}</Badge>
+                      <Badge variant="outline">{visitor.operating_system}</Badge>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4" />
+                      {formatDate(visitor.visited_at)}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium">IP:</span>
+                      <span>{visitor.ip_address}</span>
+                    </div>
+
+                    {(visitor.country || visitor.city) && (
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium">Location:</span>
+                        <span>{[visitor.city, visitor.country].filter(Boolean).join(', ')}</span>
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-2">
+                      <Monitor className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium">Resolution:</span>
+                      <span>{visitor.screen_resolution}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium">Timezone:</span>
+                      <span>{visitor.timezone}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium">Language:</span>
+                      <span>{visitor.language}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Activity className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium">Referrer:</span>
+                      <span className="truncate max-w-32">{visitor.referrer}</span>
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-muted-foreground">
+                    <span className="font-medium">Session ID:</span> {visitor.session_id}
+                  </div>
+                </div>
+              ))}
+
+              {visitors.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  No visitors logged yet.
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default AdminVisitors;
