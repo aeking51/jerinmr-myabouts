@@ -43,20 +43,6 @@ drwxr-xr-x  3 root  root   4096 Nov 15 14:00 ..
     {
       command: "cat tech-stack.json",
       output: null // Will be rendered as a special component
-    },
-    {
-      command: "cat welcome.txt",
-      output: `██╗  ██╗███████╗██████╗ ██╗███╗   ██╗    ███╗   ███╗    ██████╗ 
-██║  ██║██╔════╝██╔══██╗██║████╗  ██║    ████╗ ████║    ██╔══██╗
-███████║█████╗  ██████╔╝██║██╔██╗ ██║    ██╔████╔██║    ██████╔╝
-██╔══██║██╔══╝  ██╔══██╗██║██║╚██╗██║    ██║╚██╔╝██║    ██╔══██╗
-██║  ██║███████╗██║  ██║██║██║ ╚████║    ██║ ╚═╝ ██║    ██║  ██║
-╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝    ╚═╝     ╚═╝    ╚═╝  ╚═╝
-
-Entry-Level IT Professional | Networking & Server Administration
-Specializing in Cisco, Linux, AWS & Network Security
-
-Type 'help' for available commands or click the navigation above.`
     }
   ];
 
@@ -96,7 +82,7 @@ Type 'help' for available commands or click the navigation above.`
     "framework": "React + TypeScript",
     "styling": "Tailwind CSS",
     "backend": "Supabase",
-    "deployment": "Lovable Platform"
+    "deployment": "Vercel"
   },
   "technologies": [`}
       </div>
