@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TerminalHeader } from './TerminalHeader';
 import { TerminalNavigation } from './TerminalNavigation';
 import { WelcomeAnimation } from './WelcomeAnimation';
@@ -9,11 +10,13 @@ import { ExperienceSection } from './sections/ExperienceSection';
 import { ContactSection } from './sections/ContactSection';
 
 export function TerminalPortfolio() {
+  const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [theme, setTheme] = useState<'dark' | 'light' | 'eye-comfort'>('dark');
   const [visitorIP, setVisitorIP] = useState<string>('');
   const [visitorLocation, setVisitorLocation] = useState<string>('');
+  const [adminClicks, setAdminClicks] = useState(0);
 
   useEffect(() => {
     // Fetch visitor IP and location
@@ -39,6 +42,17 @@ export function TerminalPortfolio() {
       current === 'light' ? 'eye-comfort' : 
       'dark'
     );
+  };
+
+  const handleAdminAccess = () => {
+    setAdminClicks(prev => {
+      const newCount = prev + 1;
+      if (newCount >= 5) {
+        navigate('/admin/visitors');
+        return 0;
+      }
+      return newCount;
+    });
   };
 
   const renderSection = () => {
@@ -84,7 +98,11 @@ export function TerminalPortfolio() {
         <div className="px-3 sm:px-6 py-2 bg-muted border-t border-border">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs font-mono text-terminal-gray gap-2 sm:gap-0">
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-terminal-green rounded-full animate-pulse"></span>
+              <span 
+                className="w-2 h-2 bg-terminal-green rounded-full animate-pulse cursor-pointer" 
+                onClick={handleAdminAccess}
+                title={adminClicks > 0 ? `${5 - adminClicks} more clicks` : ''}
+              ></span>
               Connected {visitorIP && `- IP: ${visitorIP}`} {visitorLocation && `- ${visitorLocation}`}
             </span>
           </div>
