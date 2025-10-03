@@ -45,7 +45,6 @@ const AdminVisitors = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,31 +77,9 @@ const AdminVisitors = () => {
 
   useEffect(() => {
     if (user) {
-      checkAdminStatus();
       fetchVisitors();
     }
   }, [user]);
-
-  const checkAdminStatus = async () => {
-    if (!user) return;
-    
-    try {
-      const { data, error } = await supabase.rpc('has_role', {
-        _user_id: user.id,
-        _role: 'admin'
-      });
-      
-      if (error) {
-        console.error('Error checking admin status:', error);
-        setIsAdmin(false);
-      } else {
-        setIsAdmin(data === true);
-      }
-    } catch (error) {
-      console.error('Error checking admin status:', error);
-      setIsAdmin(false);
-    }
-  };
 
   const fetchVisitors = async () => {
     try {
@@ -159,29 +136,6 @@ const AdminVisitors = () => {
       <div className="min-h-screen bg-background p-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">Loading...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-background p-8">
-        <div className="max-w-7xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>Access Denied</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">
-                You don't have admin privileges to view this page.
-              </p>
-              <Button onClick={handleSignOut} variant="outline">
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign Out
-              </Button>
-            </CardContent>
-          </Card>
         </div>
       </div>
     );
