@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Calendar, Globe, Monitor, Smartphone, Tablet, MapPin, Clock, Eye, Users, Activity } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Calendar, Globe, Monitor, Smartphone, Tablet, MapPin, Clock, Eye, Users, Activity, LogOut } from 'lucide-react';
+import { isAuthenticated, clearAuthToken } from '@/lib/auth';
 
 interface Visitor {
   id: string;
@@ -32,6 +35,7 @@ interface VisitorStats {
 }
 
 const AdminVisitors = () => {
+  const navigate = useNavigate();
   const [visitors, setVisitors] = useState<Visitor[]>([]);
   const [stats, setStats] = useState<VisitorStats>({
     totalVisitors: 0,
@@ -42,8 +46,12 @@ const AdminVisitors = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate('/admin/login');
+      return;
+    }
     fetchVisitors();
-  }, []);
+  }, [navigate]);
 
   const fetchVisitors = async () => {
     try {
@@ -90,6 +98,11 @@ const AdminVisitors = () => {
     return new Date(dateString).toLocaleString();
   };
 
+  const handleLogout = () => {
+    clearAuthToken();
+    navigate('/admin/login');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background p-8">
@@ -103,9 +116,15 @@ const AdminVisitors = () => {
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-foreground">Visitor Analytics</h1>
-          <p className="text-muted-foreground">Track and analyze your website visitors</p>
+        <div className="flex items-center justify-between">
+          <div className="text-center space-y-2 flex-1">
+            <h1 className="text-4xl font-bold text-foreground">Visitor Analytics</h1>
+            <p className="text-muted-foreground">Track and analyze your website visitors</p>
+          </div>
+          <Button onClick={handleLogout} variant="outline" size="sm" className="gap-2">
+            <LogOut className="h-4 w-4" />
+            Logout
+          </Button>
         </div>
 
         {/* Stats Cards */}
