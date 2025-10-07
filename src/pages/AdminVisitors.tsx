@@ -5,8 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Calendar, Globe, Monitor, Smartphone, Tablet, MapPin, Clock, Eye, Users, Activity, LogOut } from 'lucide-react';
-import { isAuthenticated, clearAuthToken } from '@/lib/auth';
+import { Calendar, Globe, Monitor, Smartphone, Tablet, MapPin, Clock, Eye, Users, Activity, LogOut, ShieldAlert } from 'lucide-react';
 
 interface Visitor {
   id: string;
@@ -44,14 +43,46 @@ const AdminVisitors = () => {
     desktopUsers: 0
   });
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate('/admin/login');
-      return;
-    }
-    fetchVisitors();
+    checkAuthAndRole();
   }, [navigate]);
+
+  const checkAuthAndRole = async () => {
+    try {
+      // Check if user is authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        navigate('/admin/login');
+        return;
+      }
+
+      // Check if user has admin role
+      const { data: roleData, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', session.user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+
+      if (error || !roleData) {
+        setIsAdmin(false);
+        setCheckingAuth(false);
+        return;
+      }
+
+      setIsAdmin(true);
+      fetchVisitors();
+    } catch (error) {
+      console.error('Auth check error:', error);
+      navigate('/admin/login');
+    } finally {
+      setCheckingAuth(false);
+    }
+  };
 
   const fetchVisitors = async () => {
     try {
@@ -98,17 +129,45 @@ const AdminVisitors = () => {
     return new Date(dateString).toLocaleString();
   };
 
-  const handleLogout = () => {
-    clearAuthToken();
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate('/admin/login');
   };
 
-  if (loading) {
+  if (checkingAuth || loading) {
     return (
-      <div className="min-h-screen bg-background p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">Loading visitor data...</div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">
+            {checkingAuth ? 'Verifying access...' : 'Loading visitor data...'}
+          </p>
         </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <div className="flex items-center justify-center mb-4">
+              <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center">
+                <ShieldAlert className="h-6 w-6 text-destructive" />
+              </div>
+            </div>
+            <CardTitle className="text-center">Access Denied</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-muted-foreground">
+              You don't have admin privileges to access visitor analytics.
+            </p>
+            <Button onClick={handleLogout} variant="outline" className="w-full">
+              Back to Login
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }

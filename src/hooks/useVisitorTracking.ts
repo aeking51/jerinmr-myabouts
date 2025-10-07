@@ -72,27 +72,42 @@ export const useVisitorTracking = () => {
       try {
         const locationData = await getLocationData();
         
-        const visitorData: VisitorData = {
-          ip_address: locationData.ip,
-          user_agent: navigator.userAgent,
-          device_type: detectDeviceType(),
-          browser: detectBrowser(),
-          operating_system: detectOS(),
-          screen_resolution: `${screen.width}x${screen.height}`,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          language: navigator.language,
-          referrer: document.referrer || 'Direct',
-          page_url: window.location.href,
-          session_id: sessionStorage.getItem('visitor_session_id') || generateSessionId(),
-          is_mobile: /Mobi|Android/i.test(navigator.userAgent),
-          country: locationData.country,
-          city: locationData.city
-        };
-
-        // Store session ID for subsequent page visits
-        if (!sessionStorage.getItem('visitor_session_id')) {
-          sessionStorage.setItem('visitor_session_id', visitorData.session_id);
+        let sessionId = sessionStorage.getItem('visitor_session_id');
+        if (!sessionId) {
+          sessionId = generateSessionId();
+          sessionStorage.setItem('visitor_session_id', sessionId);
         }
+
+        // Input validation and sanitization
+        const userAgent = navigator.userAgent.substring(0, 500); // Limit length
+        const referrer = document.referrer ? document.referrer.substring(0, 500) : 'Direct';
+        const pageUrl = window.location.href.substring(0, 500);
+        const deviceType = detectDeviceType();
+        const browser = detectBrowser();
+        const os = detectOS();
+
+        // Validate critical fields
+        if (!userAgent || !deviceType || !browser || !os) {
+          console.error('Missing required visitor data');
+          return;
+        }
+
+        const visitorData: VisitorData = {
+          ip_address: locationData.ip?.substring(0, 45) || undefined, // IPv6 max length
+          user_agent: userAgent,
+          device_type: deviceType,
+          browser: browser,
+          operating_system: os,
+          screen_resolution: `${screen.width}x${screen.height}`,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone.substring(0, 100),
+          language: navigator.language.substring(0, 10),
+          referrer: referrer,
+          page_url: pageUrl,
+          session_id: sessionId.substring(0, 100),
+          is_mobile: /Mobi|Android/i.test(navigator.userAgent),
+          country: locationData.country?.substring(0, 100),
+          city: locationData.city?.substring(0, 100),
+        };
 
         const { error } = await supabase
           .from('visitors')

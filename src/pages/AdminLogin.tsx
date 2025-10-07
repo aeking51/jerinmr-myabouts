@@ -4,44 +4,72 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { validateLogin, setAuthToken, isAuthenticated } from '@/lib/auth';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Lock } from 'lucide-react';
 
 const AdminLogin = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (isAuthenticated()) {
-      navigate('/admin/visitors');
-    }
+    // Check if user is already logged in
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate('/admin/visitors');
+      }
+    });
   }, [navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    setTimeout(() => {
-      if (validateLogin(username, password)) {
-        setAuthToken();
+    try {
+      if (isSignUp) {
+        // Sign up new user
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/admin/visitors`
+          }
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Account created",
+          description: "Please check your email to verify your account. The first user is automatically an admin.",
+        });
+      } else {
+        // Sign in existing user
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+
         toast({
           title: "Login successful",
           description: "Welcome to visitor analytics",
         });
         navigate('/admin/visitors');
-      } else {
-        toast({
-          title: "Login failed",
-          description: "Invalid username or password",
-          variant: "destructive",
-        });
       }
+    } catch (error: any) {
+      toast({
+        title: isSignUp ? "Sign up failed" : "Login failed",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   return (
@@ -53,21 +81,25 @@ const AdminLogin = () => {
               <Lock className="h-6 w-6 text-primary" />
             </div>
           </div>
-          <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
+          <CardTitle className="text-2xl text-center">
+            {isSignUp ? 'Create Admin Account' : 'Admin Login'}
+          </CardTitle>
           <CardDescription className="text-center">
-            Enter your credentials to access visitor analytics
+            {isSignUp 
+              ? 'Sign up to create your admin account. First user becomes admin automatically.' 
+              : 'Enter your credentials to access visitor analytics'}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="username"
-                type="text"
-                placeholder="Enter username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                id="email"
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -76,14 +108,25 @@ const AdminLogin = () => {
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter password"
+                placeholder="Enter password (min 6 characters)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                minLength={6}
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
+              {loading 
+                ? (isSignUp ? "Creating account..." : "Logging in...") 
+                : (isSignUp ? "Sign Up" : "Login")}
+            </Button>
+            <Button 
+              type="button" 
+              variant="ghost" 
+              className="w-full" 
+              onClick={() => setIsSignUp(!isSignUp)}
+            >
+              {isSignUp ? "Already have an account? Login" : "Need an account? Sign up"}
             </Button>
           </form>
         </CardContent>
