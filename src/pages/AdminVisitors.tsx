@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
-import { Calendar, Globe, Monitor, Smartphone, Tablet, MapPin, Clock, Eye, Users, Activity, LogOut } from 'lucide-react';
-import type { User, Session } from '@supabase/supabase-js';
+import { Calendar, Globe, Monitor, Smartphone, Tablet, MapPin, Clock, Eye, Users, Activity } from 'lucide-react';
 
 interface Visitor {
   id: string;
@@ -43,43 +40,10 @@ const AdminVisitors = () => {
     desktopUsers: 0
   });
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (!session?.user) {
-          setTimeout(() => {
-            navigate('/auth');
-          }, 0);
-        }
-      }
-    );
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (!session?.user) {
-        navigate('/auth');
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  useEffect(() => {
-    if (user) {
-      fetchVisitors();
-    }
-  }, [user]);
+    fetchVisitors();
+  }, []);
 
   const fetchVisitors = async () => {
     try {
@@ -126,16 +90,11 @@ const AdminVisitors = () => {
     return new Date(dateString).toLocaleString();
   };
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate('/auth');
-  };
-
-  if (loading || !user) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-background p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center">Loading...</div>
+          <div className="text-center">Loading visitor data...</div>
         </div>
       </div>
     );
@@ -144,15 +103,9 @@ const AdminVisitors = () => {
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        <div className="flex items-center justify-between">
-          <div className="text-center flex-1 space-y-2">
-            <h1 className="text-4xl font-bold text-foreground">Visitor Analytics</h1>
-            <p className="text-muted-foreground">Track and analyze your website visitors</p>
-          </div>
-          <Button onClick={handleSignOut} variant="outline">
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
-          </Button>
+        <div className="text-center space-y-2">
+          <h1 className="text-4xl font-bold text-foreground">Visitor Analytics</h1>
+          <p className="text-muted-foreground">Track and analyze your website visitors</p>
         </div>
 
         {/* Stats Cards */}
