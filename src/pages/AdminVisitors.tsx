@@ -47,6 +47,7 @@ const AdminVisitors = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [sortBy, setSortBy] = useState<string>('visited_at-desc');
+  const [timeFrame, setTimeFrame] = useState<string>('all');
 
   useEffect(() => {
     checkAuthAndRole();
@@ -90,14 +91,47 @@ const AdminVisitors = () => {
     if (isAdmin) {
       fetchVisitors();
     }
-  }, [sortBy]);
+  }, [sortBy, timeFrame]);
 
   const fetchVisitors = async () => {
     try {
       const [field, direction] = sortBy.split('-');
-      const { data, error } = await supabase
+      let query = supabase
         .from('visitors')
-        .select('*')
+        .select('*');
+
+      // Apply time frame filter
+      if (timeFrame !== 'all') {
+        const now = new Date();
+        let startDate: Date;
+
+        switch (timeFrame) {
+          case '24h':
+            startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+            break;
+          case '7d':
+            startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            break;
+          case '30d':
+            startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            break;
+          case '3m':
+            startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+            break;
+          case '6m':
+            startDate = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
+            break;
+          case '1y':
+            startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+            break;
+          default:
+            startDate = new Date(0);
+        }
+
+        query = query.gte('visited_at', startDate.toISOString());
+      }
+
+      const { data, error } = await query
         .order(field, { ascending: direction === 'asc' })
         .limit(100);
 
@@ -247,30 +281,46 @@ const AdminVisitors = () => {
         {/* Visitors Table */}
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-4">
               <CardTitle className="flex items-center gap-2">
                 <Activity className="h-5 w-5" />
                 Recent Visitors
               </CardTitle>
-              <div className="flex items-center gap-2">
-                <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-[200px]">
+              <div className="flex items-center gap-3">
+                <Select value={timeFrame} onValueChange={setTimeFrame}>
+                  <SelectTrigger className="w-[180px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="visited_at-desc">Date (Newest)</SelectItem>
-                    <SelectItem value="visited_at-asc">Date (Oldest)</SelectItem>
-                    <SelectItem value="ip_address-asc">IP Address (A-Z)</SelectItem>
-                    <SelectItem value="ip_address-desc">IP Address (Z-A)</SelectItem>
-                    <SelectItem value="device_type-asc">Device Type (A-Z)</SelectItem>
-                    <SelectItem value="device_type-desc">Device Type (Z-A)</SelectItem>
-                    <SelectItem value="browser-asc">Browser (A-Z)</SelectItem>
-                    <SelectItem value="browser-desc">Browser (Z-A)</SelectItem>
-                    <SelectItem value="country-asc">Country (A-Z)</SelectItem>
-                    <SelectItem value="country-desc">Country (Z-A)</SelectItem>
+                    <SelectItem value="all">All Time</SelectItem>
+                    <SelectItem value="24h">Last 24 Hours</SelectItem>
+                    <SelectItem value="7d">Last 7 Days</SelectItem>
+                    <SelectItem value="30d">Last 30 Days</SelectItem>
+                    <SelectItem value="3m">Last 3 Months</SelectItem>
+                    <SelectItem value="6m">Last 6 Months</SelectItem>
+                    <SelectItem value="1y">Last Year</SelectItem>
                   </SelectContent>
                 </Select>
+                <div className="flex items-center gap-2">
+                  <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-[200px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="visited_at-desc">Date (Newest)</SelectItem>
+                      <SelectItem value="visited_at-asc">Date (Oldest)</SelectItem>
+                      <SelectItem value="ip_address-asc">IP Address (A-Z)</SelectItem>
+                      <SelectItem value="ip_address-desc">IP Address (Z-A)</SelectItem>
+                      <SelectItem value="device_type-asc">Device Type (A-Z)</SelectItem>
+                      <SelectItem value="device_type-desc">Device Type (Z-A)</SelectItem>
+                      <SelectItem value="browser-asc">Browser (A-Z)</SelectItem>
+                      <SelectItem value="browser-desc">Browser (Z-A)</SelectItem>
+                      <SelectItem value="country-asc">Country (A-Z)</SelectItem>
+                      <SelectItem value="country-desc">Country (Z-A)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           </CardHeader>
