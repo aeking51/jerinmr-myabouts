@@ -12,7 +12,6 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -30,40 +29,21 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        // Sign up new user
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/admin/visitors`
-          }
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-        if (error) throw error;
+      if (error) throw error;
 
-        toast({
-          title: "Account created",
-          description: "Please check your email to verify your account. The first user is automatically an admin.",
-        });
-      } else {
-        // Sign in existing user
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) throw error;
-
-        toast({
-          title: "Login successful",
-          description: "Welcome to visitor analytics",
-        });
-        navigate('/admin/visitors');
-      }
+      toast({
+        title: "Login successful",
+        description: "Welcome to visitor analytics",
+      });
+      navigate('/admin/visitors');
     } catch (error: any) {
       toast({
-        title: isSignUp ? "Sign up failed" : "Login failed",
+        title: "Login failed",
         description: error.message || "Please try again",
         variant: "destructive",
       });
@@ -82,12 +62,10 @@ const AdminLogin = () => {
             </div>
           </div>
           <CardTitle className="text-2xl text-center">
-            {isSignUp ? 'Create Admin Account' : 'Admin Login'}
+            Admin Login
           </CardTitle>
           <CardDescription className="text-center">
-            {isSignUp 
-              ? 'Sign up to create your admin account. First user becomes admin automatically.' 
-              : 'Enter your credentials to access visitor analytics'}
+            Enter your credentials to access visitor analytics
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -116,17 +94,7 @@ const AdminLogin = () => {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading 
-                ? (isSignUp ? "Creating account..." : "Logging in...") 
-                : (isSignUp ? "Sign Up" : "Login")}
-            </Button>
-            <Button 
-              type="button" 
-              variant="ghost" 
-              className="w-full" 
-              onClick={() => setIsSignUp(!isSignUp)}
-            >
-              {isSignUp ? "Already have an account? Login" : "Need an account? Sign up"}
+              {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
         </CardContent>
