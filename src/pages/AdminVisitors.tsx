@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Calendar, Globe, Monitor, Smartphone, Tablet, MapPin, Clock, Eye, Users, Activity, LogOut, ShieldAlert } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar, Globe, Monitor, Smartphone, Tablet, MapPin, Clock, Eye, Users, Activity, LogOut, ShieldAlert, ArrowUpDown } from 'lucide-react';
 
 interface Visitor {
   id: string;
@@ -45,6 +46,7 @@ const AdminVisitors = () => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [sortBy, setSortBy] = useState<string>('visited_at-desc');
 
   useEffect(() => {
     checkAuthAndRole();
@@ -84,12 +86,19 @@ const AdminVisitors = () => {
     }
   };
 
+  useEffect(() => {
+    if (isAdmin) {
+      fetchVisitors();
+    }
+  }, [sortBy]);
+
   const fetchVisitors = async () => {
     try {
+      const [field, direction] = sortBy.split('-');
       const { data, error } = await supabase
         .from('visitors')
         .select('*')
-        .order('visited_at', { ascending: false })
+        .order(field, { ascending: direction === 'asc' })
         .limit(100);
 
       if (error) throw error;
@@ -238,10 +247,32 @@ const AdminVisitors = () => {
         {/* Visitors Table */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5" />
-              Recent Visitors
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5" />
+                Recent Visitors
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="visited_at-desc">Date (Newest)</SelectItem>
+                    <SelectItem value="visited_at-asc">Date (Oldest)</SelectItem>
+                    <SelectItem value="ip_address-asc">IP Address (A-Z)</SelectItem>
+                    <SelectItem value="ip_address-desc">IP Address (Z-A)</SelectItem>
+                    <SelectItem value="device_type-asc">Device Type (A-Z)</SelectItem>
+                    <SelectItem value="device_type-desc">Device Type (Z-A)</SelectItem>
+                    <SelectItem value="browser-asc">Browser (A-Z)</SelectItem>
+                    <SelectItem value="browser-desc">Browser (Z-A)</SelectItem>
+                    <SelectItem value="country-asc">Country (A-Z)</SelectItem>
+                    <SelectItem value="country-desc">Country (Z-A)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
