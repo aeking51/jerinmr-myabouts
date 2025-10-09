@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Hash, FileCode, Code2 } from 'lucide-react';
+import { Hash, FileCode, Code2, Copy, Info } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function UtilityToolsSection() {
   const [base64Input, setBase64Input] = useState('');
@@ -76,6 +77,11 @@ export function UtilityToolsSection() {
     }
   };
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Copied to clipboard!');
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -97,6 +103,10 @@ export function UtilityToolsSection() {
                 <Code2 className="h-5 w-5" />
                 Base64 Encoder/Decoder
               </CardTitle>
+              <CardDescription className="flex items-start gap-2">
+                <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <span>Encode text to Base64 format or decode Base64 strings back to plain text. Useful for data transmission, API authentication, and encoding binary data.</span>
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Textarea
@@ -113,7 +123,18 @@ export function UtilityToolsSection() {
 
               {base64Output && (
                 <div className="p-4 rounded border bg-muted">
-                  <div className="text-xs text-terminal-gray mb-1">Output:</div>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="text-xs text-terminal-gray">Output:</div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyToClipboard(base64Output)}
+                      className="h-6"
+                    >
+                      <Copy className="h-3 w-3 mr-1" />
+                      Copy
+                    </Button>
+                  </div>
                   <div className="font-mono text-sm break-all">{base64Output}</div>
                 </div>
               )}
@@ -128,6 +149,10 @@ export function UtilityToolsSection() {
                 <Hash className="h-5 w-5" />
                 Hash Generator
               </CardTitle>
+              <CardDescription className="flex items-start gap-2">
+                <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <span>Generate cryptographic hashes (SHA-256, SHA-512) for text. Useful for password verification, data integrity checks, and creating unique identifiers.</span>
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Textarea
@@ -146,11 +171,33 @@ export function UtilityToolsSection() {
                   ) : (
                     <>
                       <div className="p-3 rounded border bg-muted">
-                        <div className="text-xs text-terminal-gray mb-1">SHA-256:</div>
+                        <div className="flex justify-between items-center mb-1">
+                          <div className="text-xs text-terminal-gray">SHA-256:</div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => copyToClipboard(hashOutputs.sha256)}
+                            className="h-6"
+                          >
+                            <Copy className="h-3 w-3 mr-1" />
+                            Copy
+                          </Button>
+                        </div>
                         <div className="font-mono text-xs break-all">{hashOutputs.sha256}</div>
                       </div>
                       <div className="p-3 rounded border bg-muted">
-                        <div className="text-xs text-terminal-gray mb-1">SHA-512:</div>
+                        <div className="flex justify-between items-center mb-1">
+                          <div className="text-xs text-terminal-gray">SHA-512:</div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => copyToClipboard(hashOutputs.sha512)}
+                            className="h-6"
+                          >
+                            <Copy className="h-3 w-3 mr-1" />
+                            Copy
+                          </Button>
+                        </div>
                         <div className="font-mono text-xs break-all">{hashOutputs.sha512}</div>
                       </div>
                     </>
@@ -168,6 +215,10 @@ export function UtilityToolsSection() {
                 <FileCode className="h-5 w-5" />
                 JSON Formatter
               </CardTitle>
+              <CardDescription className="flex items-start gap-2">
+                <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <span>Format JSON with proper indentation for readability or minify it to reduce size. Validates JSON syntax and displays errors for invalid input.</span>
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Textarea
@@ -184,7 +235,18 @@ export function UtilityToolsSection() {
 
               {jsonOutput && (
                 <div className="p-4 rounded border bg-muted">
-                  <div className="text-xs text-terminal-gray mb-1">Output:</div>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="text-xs text-terminal-gray">Output:</div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyToClipboard(jsonOutput)}
+                      className="h-6"
+                    >
+                      <Copy className="h-3 w-3 mr-1" />
+                      Copy
+                    </Button>
+                  </div>
                   <pre className="font-mono text-xs overflow-auto max-h-[300px]">{jsonOutput}</pre>
                 </div>
               )}
