@@ -8,7 +8,8 @@ import { AboutSection } from './sections/AboutSection';
 import { SkillsSection } from './sections/SkillsSection';
 import { ExperienceSection } from './sections/ExperienceSection';
 import { ContactSection } from './sections/ContactSection';
-import { PingSection } from './sections/PingSection';
+import { NetworkToolsSection } from './sections/NetworkToolsSection';
+import { UtilityToolsSection } from './sections/UtilityToolsSection';
 
 export function TerminalPortfolio() {
   const navigate = useNavigate();
@@ -72,8 +73,10 @@ export function TerminalPortfolio() {
         return <ExperienceSection />;
       case 'contact':
         return <ContactSection />;
-      case 'ping':
-        return <PingSection />;
+      case 'network':
+        return <NetworkToolsSection />;
+      case 'utilities':
+        return <UtilityToolsSection />;
       default:
         return <ProfileSection />;
     }

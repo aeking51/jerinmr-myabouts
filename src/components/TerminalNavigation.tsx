@@ -10,7 +10,8 @@ export function TerminalNavigation({ activeSection, onSectionChange }: Navigatio
     { id: 'skills', command: 'ls skills/', label: 'Skills' },
     { id: 'experience', command: 'cat experience.log', label: 'Experience' },
     { id: 'contact', command: 'whois jerinmr', label: 'Contact' },
-    { id: 'ping', command: 'ping -c 1', label: 'Ping Tool' },
+    { id: 'network', command: 'netstat -a', label: 'Network Tools' },
+    { id: 'utilities', command: 'man utils', label: 'Utilities' },
   ];
 
   return (
