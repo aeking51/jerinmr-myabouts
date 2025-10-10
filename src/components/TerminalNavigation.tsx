@@ -9,6 +9,7 @@ export function TerminalNavigation({ activeSection, onSectionChange }: Navigatio
     { id: 'about', command: 'cat about.txt', label: 'About' },
     { id: 'skills', command: 'ls skills/', label: 'Skills' },
     { id: 'experience', command: 'cat experience.log', label: 'Experience' },
+    { id: 'articles', command: 'ls articles/', label: 'Articles' },
     { id: 'contact', command: 'whois jerinmr', label: 'Contact' },
     { id: 'network', command: 'netstat -a', label: 'Network Tools' },
     { id: 'utilities', command: 'man utils', label: 'Utilities' },

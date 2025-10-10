@@ -10,6 +10,7 @@ import { ExperienceSection } from './sections/ExperienceSection';
 import { ContactSection } from './sections/ContactSection';
 import { NetworkToolsSection } from './sections/NetworkToolsSection';
 import { UtilityToolsSection } from './sections/UtilityToolsSection';
+import { ArticlesSection } from './sections/ArticlesSection';
 
 export function TerminalPortfolio() {
   const navigate = useNavigate();
@@ -71,6 +72,8 @@ export function TerminalPortfolio() {
         return <SkillsSection />;
       case 'experience':
         return <ExperienceSection />;
+      case 'articles':
+        return <ArticlesSection />;
       case 'contact':
         return <ContactSection />;
       case 'network':
