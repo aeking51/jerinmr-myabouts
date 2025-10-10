@@ -52,6 +52,22 @@ const detectOS = (): string => {
   return 'Unknown';
 };
 
+const anonymizeIP = (ip: string): string => {
+  // Anonymize IPv4 by zeroing last octet (e.g., 192.168.1.1 -> 192.168.1.0)
+  // This preserves geolocation accuracy while improving privacy
+  const ipv4Regex = /^(\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3}$/;
+  const match = ip.match(ipv4Regex);
+  if (match) {
+    return `${match[1]}.0`;
+  }
+  // For IPv6, return first 64 bits (network portion)
+  if (ip.includes(':')) {
+    const parts = ip.split(':');
+    return parts.slice(0, 4).join(':') + '::';
+  }
+  return ip; // Return as-is if format not recognized
+};
+
 const getLocationData = async (): Promise<{ country?: string; city?: string; ip?: string }> => {
   try {
     const response = await fetch('https://ipapi.co/json/');
@@ -59,7 +75,7 @@ const getLocationData = async (): Promise<{ country?: string; city?: string; ip?
     return {
       country: data.country_name,
       city: data.city,
-      ip: data.ip
+      ip: data.ip ? anonymizeIP(data.ip) : undefined
     };
   } catch {
     return {};

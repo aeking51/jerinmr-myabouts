@@ -97,6 +97,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_old_visitors: {
+        Args: { retention_days?: number }
+        Returns: {
+          deleted_count: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
