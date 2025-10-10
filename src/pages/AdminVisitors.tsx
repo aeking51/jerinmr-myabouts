@@ -223,10 +223,15 @@ const AdminVisitors = () => {
             <h1 className="text-4xl font-bold text-foreground">Visitor Analytics</h1>
             <p className="text-muted-foreground">Track and analyze your website visitors</p>
           </div>
-          <Button onClick={handleLogout} variant="outline" size="sm" className="gap-2">
-            <LogOut className="h-4 w-4" />
-            Logout
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button onClick={() => navigate('/admin/articles')} variant="outline" size="sm">
+              Articles
+            </Button>
+            <Button onClick={handleLogout} variant="outline" size="sm" className="gap-2">
+              <LogOut className="h-4 w-4" />
+              Logout
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}
