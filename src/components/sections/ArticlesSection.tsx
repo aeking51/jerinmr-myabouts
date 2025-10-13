@@ -193,18 +193,57 @@ export function ArticlesSection() {
       )}
 
       <Dialog open={!!selectedArticle} onOpenChange={(open) => !open && setSelectedArticle(null)}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="font-mono text-terminal-green">{selectedArticle?.title}</DialogTitle>
-            <p className="font-mono text-xs text-muted-foreground">
-              Published: {selectedArticle && new Date(selectedArticle.created_at).toLocaleDateString()} • 
-              {selectedArticle && ` ${selectedArticle.content.split(/\s+/).length} words`}
-            </p>
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col bg-card/95 backdrop-blur-sm border-terminal-green/50">
+          <DialogHeader className="border-b border-terminal-green/30 pb-4">
+            <div className="flex items-start gap-3">
+              <div className="w-1 h-full bg-terminal-green rounded-full" />
+              <div className="flex-1">
+                <DialogTitle className="font-mono text-2xl text-terminal-green leading-tight mb-3">
+                  {selectedArticle?.title}
+                </DialogTitle>
+                <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5" />
+                    {selectedArticle && new Date(selectedArticle.created_at).toLocaleDateString('en-US', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </span>
+                  <span className="w-1 h-1 rounded-full bg-terminal-green/50" />
+                  <span>
+                    {selectedArticle && selectedArticle.content.split(/\s+/).length} words
+                  </span>
+                  <span className="w-1 h-1 rounded-full bg-terminal-green/50" />
+                  <span>
+                    ~{selectedArticle && Math.ceil(selectedArticle.content.split(/\s+/).length / 200)} min read
+                  </span>
+                </div>
+              </div>
+            </div>
           </DialogHeader>
-          <div className="mt-4">
-            <pre className="whitespace-pre-wrap font-mono text-sm text-foreground leading-relaxed">
-              {selectedArticle?.content}
-            </pre>
+          
+          <div className="flex-1 overflow-y-auto px-1 py-6 scroll-smooth">
+            <div className="max-w-3xl mx-auto">
+              <div className="prose prose-sm max-w-none">
+                <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-foreground bg-muted/30 p-6 rounded-lg border border-border">
+                  {selectedArticle?.content}
+                </pre>
+              </div>
+            </div>
+          </div>
+          
+          <div className="border-t border-terminal-green/30 pt-4 flex justify-between items-center">
+            <span className="text-xs font-mono text-muted-foreground">
+              Article ID: {selectedArticle?.id.slice(0, 8)}
+            </span>
+            <Button 
+              variant="outline" 
+              onClick={() => setSelectedArticle(null)}
+              className="font-mono text-xs border-terminal-green/50 hover:bg-terminal-green/10 hover:border-terminal-green"
+            >
+              Close [Esc]
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
