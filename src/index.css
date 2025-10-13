@@ -143,6 +143,11 @@
     to { width: 100%; }
   }
   
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  
   .terminal-cursor {
     animation: blink 1s infinite;
   }
@@ -151,6 +156,10 @@
     overflow: hidden;
     white-space: nowrap;
     animation: typing 3s steps(40, end);
+  }
+  
+  .animate-scroll {
+    animation: scroll 30s linear infinite;
   }
 }
 

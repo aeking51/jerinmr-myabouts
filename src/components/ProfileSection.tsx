@@ -1,9 +1,11 @@
 import { User, MapPin, Mail, Phone, Linkedin } from 'lucide-react';
+import { NewsRibbon } from './NewsRibbon';
 
 export function ProfileSection() {
 
   return (
     <div className="space-y-4">
+      <NewsRibbon />
       <div className="border border-terminal-green p-3 sm:p-4 bg-card/50">
         <div className="space-y-4">
           <div className="space-y-2">
