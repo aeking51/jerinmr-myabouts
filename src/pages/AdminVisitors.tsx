@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Calendar, Globe, Monitor, Smartphone, Tablet, MapPin, Clock, Eye, Users, Activity, LogOut, ShieldAlert, ArrowUpDown } from 'lucide-react';
+import { Calendar, Globe, Monitor, Smartphone, Tablet, MapPin, Clock, Eye, Users, Activity, LogOut, ShieldAlert, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Visitor {
   id: string;
@@ -49,6 +49,9 @@ const AdminVisitors = () => {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [sortBy, setSortBy] = useState<string>('visited_at-desc');
   const [timeFrame, setTimeFrame] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     checkAuthAndRole();
@@ -90,16 +93,24 @@ const AdminVisitors = () => {
 
   useEffect(() => {
     if (isAdmin) {
+      setCurrentPage(1); // Reset to page 1 when filters change
       fetchVisitors();
     }
-  }, [sortBy, timeFrame]);
+  }, [sortBy, timeFrame, pageSize]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      fetchVisitors();
+    }
+  }, [currentPage]);
 
   const fetchVisitors = async () => {
     try {
+      setLoading(true);
       const [field, direction] = sortBy.split('-');
-      let query = supabase
-        .from('visitors')
-        .select('*');
+      
+      // Build base query for filtering
+      let baseQuery = supabase.from('visitors').select('*', { count: 'exact', head: false });
 
       // Apply time frame filter
       if (timeFrame !== 'all') {
@@ -129,24 +140,29 @@ const AdminVisitors = () => {
             startDate = new Date(0);
         }
 
-        query = query.gte('visited_at', startDate.toISOString());
+        baseQuery = baseQuery.gte('visited_at', startDate.toISOString());
       }
 
-      const { data, error } = await query
+      // Calculate offset for pagination
+      const from = (currentPage - 1) * pageSize;
+      const to = from + pageSize - 1;
+
+      const { data, error, count } = await baseQuery
         .order(field, { ascending: direction === 'asc' })
-        .limit(50);
+        .range(from, to);
 
       if (error) throw error;
 
       setVisitors(data || []);
+      setTotalCount(count || 0);
       
-      // Calculate stats
+      // Calculate stats from current page
       const uniqueIPs = new Set(data?.map(v => v.ip_address)).size;
       const mobileUsers = data?.filter(v => v.is_mobile).length || 0;
       const desktopUsers = (data?.length || 0) - mobileUsers;
 
       setStats({
-        totalVisitors: data?.length || 0,
+        totalVisitors: count || 0,
         uniqueIPs,
         mobileUsers,
         desktopUsers
@@ -413,12 +429,85 @@ const AdminVisitors = () => {
                 </div>
               ))}
 
-              {visitors.length === 0 && (
+              {visitors.length === 0 && !loading && (
                 <div className="text-center py-8 text-muted-foreground">
                   No visitors logged yet.
                 </div>
               )}
             </div>
+
+            {/* Pagination Controls */}
+            {totalCount > 0 && (
+              <div className="flex items-center justify-between pt-4 border-t">
+                <div className="flex items-center gap-4">
+                  <div className="text-sm text-muted-foreground">
+                    Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount} visitors
+                  </div>
+                  <Select value={pageSize.toString()} onValueChange={(value) => setPageSize(Number(value))}>
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10 per page</SelectItem>
+                      <SelectItem value="20">20 per page</SelectItem>
+                      <SelectItem value="50">50 per page</SelectItem>
+                      <SelectItem value="100">100 per page</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Previous
+                  </Button>
+                  
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, Math.ceil(totalCount / pageSize)) }, (_, i) => {
+                      const totalPages = Math.ceil(totalCount / pageSize);
+                      let pageNum;
+                      
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+                      
+                      return (
+                        <Button
+                          key={pageNum}
+                          variant={currentPage === pageNum ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(pageNum)}
+                          className="w-10"
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(Math.ceil(totalCount / pageSize), prev + 1))}
+                    disabled={currentPage >= Math.ceil(totalCount / pageSize)}
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
