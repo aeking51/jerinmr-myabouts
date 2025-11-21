@@ -20,8 +20,13 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
+      // Use production URL if available, otherwise fall back to current origin
+      const resetUrl = window.location.hostname === 'localhost' 
+        ? `${window.location.origin}/reset-password` // For local testing
+        : `${window.location.origin}/reset-password`; // Production URL
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: resetUrl,
       });
 
       if (error) throw error;
