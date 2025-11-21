@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Calendar, Globe, Monitor, Smartphone, Tablet, MapPin, Clock, Eye, Users, Activity, LogOut, ShieldAlert, ArrowUpDown } from 'lucide-react';
 
 interface Visitor {
@@ -133,7 +134,7 @@ const AdminVisitors = () => {
 
       const { data, error } = await query
         .order(field, { ascending: direction === 'asc' })
-        .limit(100);
+        .limit(50);
 
       if (error) throw error;
 
@@ -177,14 +178,12 @@ const AdminVisitors = () => {
     navigate('/admin/login');
   };
 
-  if (checkingAuth || loading) {
+  if (checkingAuth) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">
-            {checkingAuth ? 'Verifying access...' : 'Loading visitor data...'}
-          </p>
+          <p className="text-muted-foreground">Verifying access...</p>
         </div>
       </div>
     );
@@ -331,7 +330,27 @@ const AdminVisitors = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {visitors.map((visitor) => (
+              {loading ? (
+                // Show loading skeletons
+                Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="border rounded-lg p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-8 w-20" />
+                        <Skeleton className="h-8 w-20" />
+                        <Skeleton className="h-8 w-20" />
+                      </div>
+                      <Skeleton className="h-4 w-40" />
+                    </div>
+                    <Separator />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {Array.from({ length: 6 }).map((_, j) => (
+                        <Skeleton key={j} className="h-4 w-full" />
+                      ))}
+                    </div>
+                  </div>
+                ))
+              ) : visitors.map((visitor) => (
                 <div key={visitor.id} className="border rounded-lg p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
