@@ -27,8 +27,14 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [lockoutUntil, setLockoutUntil] = useState<number | null>(null);
+  const [remainingTime, setRemainingTime] = useState(0);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const MAX_ATTEMPTS = 5;
+  const LOCKOUT_DURATION = 60000; // 1 minute in milliseconds
 
   useEffect(() => {
     // Check if user is already logged in
@@ -37,11 +43,59 @@ const AdminLogin = () => {
         navigate('/admin/visitors');
       }
     });
+
+    // Check for existing lockout
+    const storedLockout = localStorage.getItem('loginLockout');
+    if (storedLockout) {
+      const lockoutTime = parseInt(storedLockout);
+      if (lockoutTime > Date.now()) {
+        setLockoutUntil(lockoutTime);
+      } else {
+        localStorage.removeItem('loginLockout');
+        localStorage.removeItem('failedAttempts');
+      }
+    }
+
+    const storedAttempts = localStorage.getItem('failedAttempts');
+    if (storedAttempts) {
+      setFailedAttempts(parseInt(storedAttempts));
+    }
   }, [navigate]);
+
+  // Countdown timer for lockout
+  useEffect(() => {
+    if (!lockoutUntil) return;
+
+    const interval = setInterval(() => {
+      const remaining = Math.ceil((lockoutUntil - Date.now()) / 1000);
+      if (remaining <= 0) {
+        setLockoutUntil(null);
+        setFailedAttempts(0);
+        setRemainingTime(0);
+        localStorage.removeItem('loginLockout');
+        localStorage.removeItem('failedAttempts');
+        clearInterval(interval);
+      } else {
+        setRemainingTime(remaining);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [lockoutUntil]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+
+    // Check if locked out
+    if (lockoutUntil && lockoutUntil > Date.now()) {
+      toast({
+        title: "Too many attempts",
+        description: `Please wait ${remainingTime} seconds before trying again`,
+        variant: "destructive",
+      });
+      return;
+    }
 
     // Validate input
     const validationResult = loginSchema.safeParse({ email, password });
@@ -69,17 +123,40 @@ const AdminLogin = () => {
 
       if (error) throw error;
 
+      // Reset failed attempts on success
+      setFailedAttempts(0);
+      localStorage.removeItem('failedAttempts');
+      localStorage.removeItem('loginLockout');
+
       toast({
         title: "Login successful",
         description: "Welcome to visitor analytics",
       });
       navigate('/admin/visitors');
     } catch (error: any) {
-      toast({
-        title: "Login failed",
-        description: error.message || "Please try again",
-        variant: "destructive",
-      });
+      // Increment failed attempts
+      const newAttempts = failedAttempts + 1;
+      setFailedAttempts(newAttempts);
+      localStorage.setItem('failedAttempts', newAttempts.toString());
+
+      if (newAttempts >= MAX_ATTEMPTS) {
+        const lockoutTime = Date.now() + LOCKOUT_DURATION;
+        setLockoutUntil(lockoutTime);
+        localStorage.setItem('loginLockout', lockoutTime.toString());
+        
+        toast({
+          title: "Account temporarily locked",
+          description: "Too many failed attempts. Please wait 1 minute before trying again.",
+          variant: "destructive",
+        });
+      } else {
+        const remainingAttempts = MAX_ATTEMPTS - newAttempts;
+        toast({
+          title: "Login failed",
+          description: `${error.message || "Invalid credentials"}. ${remainingAttempts} attempt${remainingAttempts !== 1 ? 's' : ''} remaining.`,
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -137,8 +214,17 @@ const AdminLogin = () => {
                 <p className="text-sm text-destructive">{errors.password}</p>
               )}
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
+            {lockoutUntil && lockoutUntil > Date.now() && (
+              <div className="text-center text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+                Too many failed attempts. Please wait {remainingTime} seconds.
+              </div>
+            )}
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={loading || (lockoutUntil !== null && lockoutUntil > Date.now())}
+            >
+              {loading ? "Logging in..." : lockoutUntil && lockoutUntil > Date.now() ? `Locked (${remainingTime}s)` : "Login"}
             </Button>
           </form>
         </CardContent>
