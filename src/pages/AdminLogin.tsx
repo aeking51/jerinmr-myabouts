@@ -12,7 +12,6 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isSignup, setIsSignup] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -30,39 +29,21 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      if (isSignup) {
-        const redirectUrl = `${window.location.origin}/admin/visitors`;
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: redirectUrl,
-          },
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-        if (error) throw error;
+      if (error) throw error;
 
-        toast({
-          title: "Signup successful",
-          description: "Please check your email to confirm your account",
-        });
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) throw error;
-
-        toast({
-          title: "Login successful",
-          description: "Welcome to visitor analytics",
-        });
-        navigate('/admin/visitors');
-      }
+      toast({
+        title: "Login successful",
+        description: "Welcome to visitor analytics",
+      });
+      navigate('/admin/visitors');
     } catch (error: any) {
       toast({
-        title: isSignup ? "Signup failed" : "Login failed",
+        title: "Login failed",
         description: error.message || "Please try again",
         variant: "destructive",
       });
@@ -81,13 +62,10 @@ const AdminLogin = () => {
             </div>
           </div>
           <CardTitle className="text-2xl text-center">
-            {isSignup ? 'Admin Signup' : 'Admin Login'}
+            Admin Login
           </CardTitle>
           <CardDescription className="text-center">
-            {isSignup 
-              ? 'Create an account to access visitor analytics'
-              : 'Enter your credentials to access visitor analytics'
-            }
+            Enter your credentials to access visitor analytics
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -116,30 +94,15 @@ const AdminLogin = () => {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading 
-                ? (isSignup ? "Signing up..." : "Logging in...") 
-                : (isSignup ? "Sign Up" : "Login")
-              }
+              {loading ? "Logging in..." : "Login"}
             </Button>
-            <div className="text-center space-y-2">
-              {!isSignup && (
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-muted-foreground hover:text-primary block"
-                >
-                  Forgot password?
-                </Link>
-              )}
-              <button
-                type="button"
-                onClick={() => setIsSignup(!isSignup)}
+            <div className="text-center">
+              <Link
+                to="/forgot-password"
                 className="text-sm text-muted-foreground hover:text-primary"
               >
-                {isSignup 
-                  ? 'Already have an account? Login' 
-                  : "Don't have an account? Sign up"
-                }
-              </button>
+                Forgot password?
+              </Link>
             </div>
           </form>
         </CardContent>
