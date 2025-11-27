@@ -4,12 +4,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { FileText, Plus, Edit, Trash2, Eye, EyeOff, LogOut } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import RichTextEditor from '@/components/RichTextEditor';
 
 interface Article {
   id: string;
@@ -255,55 +255,59 @@ const AdminArticles = () => {
                     New Article
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>{editingArticle ? 'Edit Article' : 'Create Article'}</DialogTitle>
                   </DialogHeader>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="title">Title</Label>
-                      <Input
-                        id="title"
-                        value={formData.title}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="slug">Slug</Label>
-                      <Input
-                        id="slug"
-                        value={formData.slug}
-                        onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                        required
-                      />
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="title">Title</Label>
+                        <Input
+                          id="title"
+                          value={formData.title}
+                          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                          placeholder="Enter article title..."
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="slug">Slug</Label>
+                        <Input
+                          id="slug"
+                          value={formData.slug}
+                          onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                          placeholder="article-url-slug"
+                          required
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="content">Content</Label>
-                      <Textarea
-                        id="content"
-                        value={formData.content}
-                        onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                        rows={8}
-                        required
+                      <RichTextEditor
+                        content={formData.content}
+                        onChange={(content) => setFormData({ ...formData, content })}
                       />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="published"
-                        checked={formData.published}
-                        onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
-                      />
-                      <Label htmlFor="published">Published</Label>
-                    </div>
-                    <div className="flex gap-2 justify-end">
-                      <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                        Cancel
-                      </Button>
-                      <Button type="submit">
-                        {editingArticle ? 'Update' : 'Create'}
-                      </Button>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="published"
+                          checked={formData.published}
+                          onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
+                          className="h-4 w-4"
+                        />
+                        <Label htmlFor="published" className="cursor-pointer">Published</Label>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button type="submit">
+                          {editingArticle ? 'Update Article' : 'Create Article'}
+                        </Button>
+                      </div>
                     </div>
                   </form>
                 </DialogContent>
