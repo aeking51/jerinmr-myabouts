@@ -252,6 +252,14 @@
     color: hsl(var(--muted-foreground));
   }
 
+  .prose img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
   .prose code {
     background-color: hsl(var(--muted));
     padding: 0.2rem 0.4rem;
