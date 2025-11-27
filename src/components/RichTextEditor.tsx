@@ -4,6 +4,7 @@ import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import { Color } from '@tiptap/extension-color';
 import { TextStyle } from '@tiptap/extension-text-style';
+import Image from '@tiptap/extension-image';
 import { Button } from './ui/button';
 import {
   Bold,
@@ -20,7 +21,11 @@ import {
   Undo,
   Redo,
   Quote,
+  ImageIcon,
 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useRef } from 'react';
 
 interface RichTextEditorProps {
   content: string;
@@ -28,12 +33,22 @@ interface RichTextEditorProps {
 }
 
 const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const editor = useEditor({
     extensions: [
       StarterKit,
       Underline,
       TextStyle,
       Color,
+      Image.configure({
+        inline: true,
+        allowBase64: true,
+        HTMLAttributes: {
+          class: 'max-w-full h-auto rounded-md',
+        },
+      }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
@@ -48,6 +63,70 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
       },
     },
   });
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !editor) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please select an image under 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('article-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('article-images')
+        .getPublicUrl(filePath);
+
+      // Insert image into editor
+      editor.chain().focus().setImage({ src: publicUrl }).run();
+
+      toast({
+        title: "Image uploaded",
+        description: "Image added to article",
+      });
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      toast({
+        title: "Upload failed",
+        description: error.message || "Failed to upload image",
+        variant: "destructive",
+      });
+    } finally {
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   if (!editor) {
     return null;
@@ -78,6 +157,13 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
 
   return (
     <div className="border rounded-md overflow-hidden bg-background">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        className="hidden"
+      />
       <div className="border-b bg-muted/30 p-2 flex flex-wrap gap-1">
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
@@ -186,6 +272,15 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
           title="Quote"
         >
           <Quote className="h-4 w-4" />
+        </ToolbarButton>
+
+        <div className="w-px h-8 bg-border mx-1" />
+
+        <ToolbarButton
+          onClick={() => fileInputRef.current?.click()}
+          title="Insert Image"
+        >
+          <ImageIcon className="h-4 w-4" />
         </ToolbarButton>
       </div>
       <EditorContent editor={editor} className="bg-background" />

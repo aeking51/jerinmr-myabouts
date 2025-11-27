@@ -74,8 +74,10 @@ export function ArticlesSection() {
   };
 
   const getPreview = (content: string, maxLength = 150) => {
-    if (content.length <= maxLength) return content;
-    return content.substring(0, maxLength) + '...';
+    // Strip HTML tags for preview
+    const stripped = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (stripped.length <= maxLength) return stripped;
+    return stripped.substring(0, maxLength) + '...';
   };
 
   if (loading) {
@@ -179,7 +181,7 @@ export function ArticlesSection() {
                 </Button>
               </div>
               <CardDescription className="font-mono text-xs">
-                {new Date(article.created_at).toLocaleDateString()} • {article.content.split(/\s+/).length} words
+                {new Date(article.created_at).toLocaleDateString()} • {article.content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(w => w).length} words
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
@@ -212,11 +214,11 @@ export function ArticlesSection() {
                   </span>
                   <span className="w-1 h-1 rounded-full bg-terminal-green/50" />
                   <span>
-                    {selectedArticle && selectedArticle.content.split(/\s+/).length} words
+                    {selectedArticle && selectedArticle.content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(w => w).length} words
                   </span>
                   <span className="w-1 h-1 rounded-full bg-terminal-green/50" />
                   <span>
-                    ~{selectedArticle && Math.ceil(selectedArticle.content.split(/\s+/).length / 200)} min read
+                    ~{selectedArticle && Math.ceil(selectedArticle.content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(w => w).length / 200)} min read
                   </span>
                 </div>
               </div>
@@ -225,11 +227,10 @@ export function ArticlesSection() {
           
           <div className="flex-1 overflow-y-auto px-1 py-6 scroll-smooth">
             <div className="max-w-3xl mx-auto">
-              <div className="prose prose-sm max-w-none">
-                <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-foreground bg-muted/30 p-6 rounded-lg border border-border">
-                  {selectedArticle?.content}
-                </pre>
-              </div>
+              <div 
+                className="prose prose-sm max-w-none text-foreground"
+                dangerouslySetInnerHTML={{ __html: selectedArticle?.content || '' }}
+              />
             </div>
           </div>
           
