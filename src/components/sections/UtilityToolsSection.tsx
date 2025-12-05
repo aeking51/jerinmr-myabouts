@@ -1,10 +1,25 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Hash, FileCode, Code2, Copy, Info } from 'lucide-react';
+import { Hash, FileCode, Code2, Copy, Info, Globe, Loader2, CheckCircle, XCircle, Clock, Shield, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+
+interface WebsiteStatus {
+  url: string;
+  isOnline: boolean;
+  statusCode: number | null;
+  statusText: string;
+  responseTime: number;
+  contentType: string | null;
+  server: string | null;
+  contentLength: string | null;
+  redirected: boolean;
+  finalUrl: string;
+  timestamp: string;
+}
 
 export function UtilityToolsSection() {
   const [base64Input, setBase64Input] = useState('');
@@ -13,7 +28,10 @@ export function UtilityToolsSection() {
   const [hashOutputs, setHashOutputs] = useState<any>(null);
   const [jsonInput, setJsonInput] = useState('');
   const [jsonOutput, setJsonOutput] = useState('');
-
+  const [websiteUrl, setWebsiteUrl] = useState('');
+  const [websiteStatus, setWebsiteStatus] = useState<WebsiteStatus | null>(null);
+  const [isCheckingWebsite, setIsCheckingWebsite] = useState(false);
+  const [websiteHistory, setWebsiteHistory] = useState<WebsiteStatus[]>([]);
   const handleBase64Encode = () => {
     try {
       const encoded = btoa(base64Input);
@@ -82,6 +100,72 @@ export function UtilityToolsSection() {
     toast.success('Copied to clipboard!');
   };
 
+  const handleWebsiteCheck = async () => {
+    if (!websiteUrl.trim()) {
+      toast.error('Please enter a URL');
+      return;
+    }
+
+    let urlToCheck = websiteUrl.trim();
+    if (!urlToCheck.startsWith('http://') && !urlToCheck.startsWith('https://')) {
+      urlToCheck = 'https://' + urlToCheck;
+    }
+
+    setIsCheckingWebsite(true);
+    const startTime = performance.now();
+
+    try {
+      const response = await fetch(urlToCheck, {
+        method: 'HEAD',
+        mode: 'no-cors',
+      });
+
+      const endTime = performance.now();
+      const responseTime = Math.round(endTime - startTime);
+
+      // With no-cors, we can't read the response, but we know it reached
+      const result: WebsiteStatus = {
+        url: urlToCheck,
+        isOnline: true,
+        statusCode: response.type === 'opaque' ? null : response.status,
+        statusText: response.type === 'opaque' ? 'Reachable (CORS restricted)' : response.statusText || 'OK',
+        responseTime,
+        contentType: response.headers.get('content-type'),
+        server: response.headers.get('server'),
+        contentLength: response.headers.get('content-length'),
+        redirected: response.redirected,
+        finalUrl: response.url || urlToCheck,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+
+      setWebsiteStatus(result);
+      setWebsiteHistory(prev => [result, ...prev.slice(0, 9)]);
+      toast.success('Website check complete!');
+    } catch (error) {
+      const endTime = performance.now();
+      const responseTime = Math.round(endTime - startTime);
+
+      const result: WebsiteStatus = {
+        url: urlToCheck,
+        isOnline: false,
+        statusCode: null,
+        statusText: error instanceof Error ? error.message : 'Connection failed',
+        responseTime,
+        contentType: null,
+        server: null,
+        contentLength: null,
+        redirected: false,
+        finalUrl: urlToCheck,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+
+      setWebsiteStatus(result);
+      setWebsiteHistory(prev => [result, ...prev.slice(0, 9)]);
+      toast.error('Website appears to be down or unreachable');
+    } finally {
+      setIsCheckingWebsite(false);
+    }
+  };
   return (
     <div className="space-y-6">
       <div>
@@ -90,10 +174,11 @@ export function UtilityToolsSection() {
       </div>
 
       <Tabs defaultValue="base64" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="base64">Base64</TabsTrigger>
-          <TabsTrigger value="hash">Hash Generator</TabsTrigger>
-          <TabsTrigger value="json">JSON Tools</TabsTrigger>
+          <TabsTrigger value="hash">Hash</TabsTrigger>
+          <TabsTrigger value="json">JSON</TabsTrigger>
+          <TabsTrigger value="website">Status</TabsTrigger>
         </TabsList>
 
         <TabsContent value="base64" className="space-y-4">
@@ -248,6 +333,139 @@ export function UtilityToolsSection() {
                     </Button>
                   </div>
                   <pre className="font-mono text-xs overflow-auto max-h-[300px]">{jsonOutput}</pre>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="website" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                Website Status Checker
+              </CardTitle>
+              <CardDescription className="flex items-start gap-2">
+                <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <span>Check if a website is online and get response details including response time, status code, and server information.</span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter website URL (e.g., google.com)"
+                  value={websiteUrl}
+                  onChange={(e) => setWebsiteUrl(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleWebsiteCheck()}
+                  className="font-mono text-sm"
+                />
+                <Button onClick={handleWebsiteCheck} disabled={isCheckingWebsite}>
+                  {isCheckingWebsite ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    'Check'
+                  )}
+                </Button>
+              </div>
+
+              {websiteStatus && (
+                <div className="p-4 rounded border bg-muted space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {websiteStatus.isOnline ? (
+                        <CheckCircle className="h-5 w-5 text-green-500" />
+                      ) : (
+                        <XCircle className="h-5 w-5 text-destructive" />
+                      )}
+                      <span className={`font-semibold ${websiteStatus.isOnline ? 'text-green-500' : 'text-destructive'}`}>
+                        {websiteStatus.isOnline ? 'Online' : 'Offline / Unreachable'}
+                      </span>
+                    </div>
+                    <span className="text-xs text-terminal-gray">{websiteStatus.timestamp}</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="space-y-1">
+                      <div className="text-xs text-terminal-gray">URL</div>
+                      <div className="font-mono text-xs break-all">{websiteStatus.url}</div>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <div className="text-xs text-terminal-gray flex items-center gap-1">
+                        <Clock className="h-3 w-3" /> Response Time
+                      </div>
+                      <div className={`font-mono text-xs ${
+                        websiteStatus.responseTime < 300 ? 'text-green-500' : 
+                        websiteStatus.responseTime < 1000 ? 'text-yellow-500' : 'text-destructive'
+                      }`}>
+                        {websiteStatus.responseTime}ms
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="text-xs text-terminal-gray">Status</div>
+                      <div className="font-mono text-xs">
+                        {websiteStatus.statusCode ? `${websiteStatus.statusCode} ${websiteStatus.statusText}` : websiteStatus.statusText}
+                      </div>
+                    </div>
+
+                    {websiteStatus.redirected && (
+                      <div className="space-y-1">
+                        <div className="text-xs text-terminal-gray flex items-center gap-1">
+                          <ArrowRight className="h-3 w-3" /> Redirected To
+                        </div>
+                        <div className="font-mono text-xs break-all">{websiteStatus.finalUrl}</div>
+                      </div>
+                    )}
+
+                    {websiteStatus.server && (
+                      <div className="space-y-1">
+                        <div className="text-xs text-terminal-gray">Server</div>
+                        <div className="font-mono text-xs">{websiteStatus.server}</div>
+                      </div>
+                    )}
+
+                    {websiteStatus.contentType && (
+                      <div className="space-y-1">
+                        <div className="text-xs text-terminal-gray">Content Type</div>
+                        <div className="font-mono text-xs">{websiteStatus.contentType}</div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-2 border-t border-border">
+                    <div className="flex items-center gap-2 text-xs text-terminal-gray">
+                      <Shield className="h-3 w-3" />
+                      <span>
+                        {websiteStatus.url.startsWith('https://') ? 'SSL/TLS Enabled' : 'No SSL (HTTP only)'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {websiteHistory.length > 1 && (
+                <div className="space-y-2">
+                  <div className="text-xs text-terminal-gray">Recent Checks:</div>
+                  <div className="space-y-1 max-h-[150px] overflow-y-auto">
+                    {websiteHistory.slice(1).map((item, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 rounded bg-secondary text-xs">
+                        <div className="flex items-center gap-2">
+                          {item.isOnline ? (
+                            <CheckCircle className="h-3 w-3 text-green-500" />
+                          ) : (
+                            <XCircle className="h-3 w-3 text-destructive" />
+                          )}
+                          <span className="font-mono truncate max-w-[200px]">{item.url}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-terminal-gray">
+                          <span>{item.responseTime}ms</span>
+                          <span>{item.timestamp}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </CardContent>
