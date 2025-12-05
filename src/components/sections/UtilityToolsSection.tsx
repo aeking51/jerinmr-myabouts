@@ -4,7 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Hash, FileCode, Code2, Copy, Info, Globe, Loader2, CheckCircle, XCircle, Clock, Shield, ArrowRight, AlertTriangle, Calendar } from 'lucide-react';
+import { Hash, FileCode, Code2, Copy, Info, Globe, Loader2, CheckCircle, XCircle, Clock, Shield, ArrowRight, AlertTriangle, Calendar, Zap, Lock, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -20,6 +20,8 @@ interface WebsiteStatus {
   redirected: boolean;
   finalUrl: string;
   timestamp: string;
+  performanceGrade: 'A' | 'B' | 'C' | 'D' | 'F';
+  isHttps: boolean;
 }
 
 interface SSLCertInfo {
@@ -138,6 +140,15 @@ export function UtilityToolsSection() {
       const endTime = performance.now();
       const responseTime = Math.round(endTime - startTime);
 
+      // Calculate performance grade based on response time
+      const getPerformanceGrade = (time: number): 'A' | 'B' | 'C' | 'D' | 'F' => {
+        if (time < 200) return 'A';
+        if (time < 500) return 'B';
+        if (time < 1000) return 'C';
+        if (time < 2000) return 'D';
+        return 'F';
+      };
+
       // With no-cors, we can't read the response, but we know it reached
       const result: WebsiteStatus = {
         url: urlToCheck,
@@ -151,6 +162,8 @@ export function UtilityToolsSection() {
         redirected: response.redirected,
         finalUrl: response.url || urlToCheck,
         timestamp: new Date().toLocaleTimeString(),
+        performanceGrade: getPerformanceGrade(responseTime),
+        isHttps: urlToCheck.startsWith('https://'),
       };
 
       setWebsiteStatus(result);
@@ -172,6 +185,8 @@ export function UtilityToolsSection() {
         redirected: false,
         finalUrl: urlToCheck,
         timestamp: new Date().toLocaleTimeString(),
+        performanceGrade: 'F',
+        isHttps: urlToCheck.startsWith('https://'),
       };
 
       setWebsiteStatus(result);
@@ -265,6 +280,17 @@ export function UtilityToolsSection() {
     }
   };
 
+  const getPerformanceGradeColor = (grade: string) => {
+    switch (grade) {
+      case 'A': return 'text-green-500 bg-green-500/10';
+      case 'B': return 'text-emerald-400 bg-emerald-400/10';
+      case 'C': return 'text-yellow-500 bg-yellow-500/10';
+      case 'D': return 'text-orange-500 bg-orange-500/10';
+      case 'F': return 'text-destructive bg-destructive/10';
+      default: return 'text-terminal-gray bg-muted';
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -277,7 +303,7 @@ export function UtilityToolsSection() {
           <TabsTrigger value="base64">Base64</TabsTrigger>
           <TabsTrigger value="hash">Hash</TabsTrigger>
           <TabsTrigger value="json">JSON</TabsTrigger>
-          <TabsTrigger value="website">Status</TabsTrigger>
+          <TabsTrigger value="website">Site Monitor</TabsTrigger>
         </TabsList>
 
         <TabsContent value="base64" className="space-y-4">
@@ -469,9 +495,10 @@ export function UtilityToolsSection() {
               </div>
 
               {websiteStatus && (
-                <div className="p-4 rounded border bg-muted space-y-3">
+                <div className="p-4 rounded border bg-muted space-y-4">
+                  {/* Header with status and performance grade */}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       {websiteStatus.isOnline ? (
                         <CheckCircle className="h-5 w-5 text-green-500" />
                       ) : (
@@ -480,30 +507,72 @@ export function UtilityToolsSection() {
                       <span className={`font-semibold ${websiteStatus.isOnline ? 'text-green-500' : 'text-destructive'}`}>
                         {websiteStatus.isOnline ? 'Online' : 'Offline / Unreachable'}
                       </span>
+                      <div className={`px-2 py-0.5 rounded font-bold text-sm ${getPerformanceGradeColor(websiteStatus.performanceGrade)}`}>
+                        {websiteStatus.performanceGrade}
+                      </div>
                     </div>
-                    <span className="text-xs text-terminal-gray">{websiteStatus.timestamp}</span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleWebsiteCheck}
+                        disabled={isCheckingWebsite}
+                        className="h-6 px-2"
+                      >
+                        <RefreshCw className={`h-3 w-3 ${isCheckingWebsite ? 'animate-spin' : ''}`} />
+                      </Button>
+                      <span className="text-xs text-terminal-gray">{websiteStatus.timestamp}</span>
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="space-y-1">
-                      <div className="text-xs text-terminal-gray">URL</div>
-                      <div className="font-mono text-xs break-all">{websiteStatus.url}</div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <div className="text-xs text-terminal-gray flex items-center gap-1">
-                        <Clock className="h-3 w-3" /> Response Time
+                  {/* Quick Stats */}
+                  <div className="grid grid-cols-4 gap-2">
+                    <div className="p-2 rounded bg-background/50 text-center">
+                      <div className="flex items-center justify-center gap-1 text-xs text-terminal-gray mb-1">
+                        <Clock className="h-3 w-3" /> Response
                       </div>
-                      <div className={`font-mono text-xs ${
+                      <div className={`font-mono text-sm font-semibold ${
                         websiteStatus.responseTime < 300 ? 'text-green-500' : 
                         websiteStatus.responseTime < 1000 ? 'text-yellow-500' : 'text-destructive'
                       }`}>
                         {websiteStatus.responseTime}ms
                       </div>
                     </div>
+                    <div className="p-2 rounded bg-background/50 text-center">
+                      <div className="flex items-center justify-center gap-1 text-xs text-terminal-gray mb-1">
+                        <Lock className="h-3 w-3" /> Protocol
+                      </div>
+                      <div className={`font-mono text-sm font-semibold ${websiteStatus.isHttps ? 'text-green-500' : 'text-yellow-500'}`}>
+                        {websiteStatus.isHttps ? 'HTTPS' : 'HTTP'}
+                      </div>
+                    </div>
+                    <div className="p-2 rounded bg-background/50 text-center">
+                      <div className="flex items-center justify-center gap-1 text-xs text-terminal-gray mb-1">
+                        <Globe className="h-3 w-3" /> Status
+                      </div>
+                      <div className="font-mono text-sm font-semibold">
+                        {websiteStatus.statusCode || '—'}
+                      </div>
+                    </div>
+                    <div className="p-2 rounded bg-background/50 text-center">
+                      <div className="flex items-center justify-center gap-1 text-xs text-terminal-gray mb-1">
+                        <Zap className="h-3 w-3" /> Grade
+                      </div>
+                      <div className={`font-mono text-sm font-semibold ${getPerformanceGradeColor(websiteStatus.performanceGrade).split(' ')[0]}`}>
+                        {websiteStatus.performanceGrade}
+                      </div>
+                    </div>
+                  </div>
 
+                  {/* Detailed Info */}
+                  <div className="grid grid-cols-2 gap-3 text-sm pt-2 border-t border-border">
                     <div className="space-y-1">
-                      <div className="text-xs text-terminal-gray">Status</div>
+                      <div className="text-xs text-terminal-gray">URL</div>
+                      <div className="font-mono text-xs break-all">{websiteStatus.url}</div>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <div className="text-xs text-terminal-gray">Status Message</div>
                       <div className="font-mono text-xs">
                         {websiteStatus.statusCode ? `${websiteStatus.statusCode} ${websiteStatus.statusText}` : websiteStatus.statusText}
                       </div>
@@ -529,6 +598,13 @@ export function UtilityToolsSection() {
                       <div className="space-y-1">
                         <div className="text-xs text-terminal-gray">Content Type</div>
                         <div className="font-mono text-xs">{websiteStatus.contentType}</div>
+                      </div>
+                    )}
+
+                    {websiteStatus.contentLength && (
+                      <div className="space-y-1">
+                        <div className="text-xs text-terminal-gray">Content Size</div>
+                        <div className="font-mono text-xs">{(parseInt(websiteStatus.contentLength) / 1024).toFixed(1)} KB</div>
                       </div>
                     )}
                   </div>
