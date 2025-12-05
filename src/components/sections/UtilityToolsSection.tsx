@@ -4,8 +4,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Hash, FileCode, Code2, Copy, Info, Globe, Loader2, CheckCircle, XCircle, Clock, Shield, ArrowRight } from 'lucide-react';
+import { Hash, FileCode, Code2, Copy, Info, Globe, Loader2, CheckCircle, XCircle, Clock, Shield, ArrowRight, AlertTriangle, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface WebsiteStatus {
   url: string;
@@ -21,6 +22,18 @@ interface WebsiteStatus {
   timestamp: string;
 }
 
+interface SSLCertInfo {
+  hostname: string;
+  issuer: string;
+  subject: string;
+  validFrom: string;
+  validTo: string;
+  daysUntilExpiry: number;
+  status: 'valid' | 'warning' | 'critical' | 'expired';
+  serialNumber: string;
+  error?: string;
+}
+
 export function UtilityToolsSection() {
   const [base64Input, setBase64Input] = useState('');
   const [base64Output, setBase64Output] = useState('');
@@ -32,6 +45,8 @@ export function UtilityToolsSection() {
   const [websiteStatus, setWebsiteStatus] = useState<WebsiteStatus | null>(null);
   const [isCheckingWebsite, setIsCheckingWebsite] = useState(false);
   const [websiteHistory, setWebsiteHistory] = useState<WebsiteStatus[]>([]);
+  const [sslInfo, setSSLInfo] = useState<SSLCertInfo | null>(null);
+  const [isCheckingSSL, setIsCheckingSSL] = useState(false);
   const handleBase64Encode = () => {
     try {
       const encoded = btoa(base64Input);
@@ -166,6 +181,90 @@ export function UtilityToolsSection() {
       setIsCheckingWebsite(false);
     }
   };
+
+  const handleSSLCheck = async () => {
+    if (!websiteUrl.trim()) {
+      toast.error('Please enter a URL first');
+      return;
+    }
+
+    let hostname = websiteUrl.trim();
+    hostname = hostname.replace(/^https?:\/\//, '').split('/')[0].split(':')[0];
+
+    setIsCheckingSSL(true);
+    setSSLInfo(null);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('check-ssl', {
+        body: { hostname }
+      });
+
+      if (error) throw error;
+
+      if (data.error) {
+        setSSLInfo({ 
+          hostname, 
+          error: data.error,
+          issuer: '',
+          subject: '',
+          validFrom: '',
+          validTo: '',
+          daysUntilExpiry: 0,
+          status: 'expired',
+          serialNumber: ''
+        });
+        toast.error(data.error);
+      } else {
+        setSSLInfo(data);
+        if (data.status === 'expired') {
+          toast.error('SSL certificate has expired!');
+        } else if (data.status === 'critical') {
+          toast.warning(`SSL expires in ${data.daysUntilExpiry} days!`);
+        } else if (data.status === 'warning') {
+          toast.warning(`SSL expires in ${data.daysUntilExpiry} days`);
+        } else {
+          toast.success('SSL certificate is valid');
+        }
+      }
+    } catch (error) {
+      console.error('SSL check error:', error);
+      toast.error('Failed to check SSL certificate');
+      setSSLInfo({
+        hostname,
+        error: 'Failed to connect to SSL check service',
+        issuer: '',
+        subject: '',
+        validFrom: '',
+        validTo: '',
+        daysUntilExpiry: 0,
+        status: 'expired',
+        serialNumber: ''
+      });
+    } finally {
+      setIsCheckingSSL(false);
+    }
+  };
+
+  const getSSLStatusColor = (status: string) => {
+    switch (status) {
+      case 'valid': return 'text-green-500';
+      case 'warning': return 'text-yellow-500';
+      case 'critical': return 'text-orange-500';
+      case 'expired': return 'text-destructive';
+      default: return 'text-terminal-gray';
+    }
+  };
+
+  const getSSLStatusIcon = (status: string) => {
+    switch (status) {
+      case 'valid': return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'warning': return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
+      case 'critical': return <AlertTriangle className="h-4 w-4 text-orange-500" />;
+      case 'expired': return <XCircle className="h-4 w-4 text-destructive" />;
+      default: return <Shield className="h-4 w-4" />;
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -435,13 +534,86 @@ export function UtilityToolsSection() {
                   </div>
 
                   <div className="pt-2 border-t border-border">
-                    <div className="flex items-center gap-2 text-xs text-terminal-gray">
-                      <Shield className="h-3 w-3" />
-                      <span>
-                        {websiteStatus.url.startsWith('https://') ? 'SSL/TLS Enabled' : 'No SSL (HTTP only)'}
-                      </span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-xs text-terminal-gray">
+                        <Shield className="h-3 w-3" />
+                        <span>
+                          {websiteStatus.url.startsWith('https://') ? 'SSL/TLS Enabled' : 'No SSL (HTTP only)'}
+                        </span>
+                      </div>
+                      {websiteStatus.url.startsWith('https://') && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleSSLCheck}
+                          disabled={isCheckingSSL}
+                          className="h-6 text-xs"
+                        >
+                          {isCheckingSSL ? (
+                            <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                          ) : (
+                            <Shield className="h-3 w-3 mr-1" />
+                          )}
+                          Check SSL
+                        </Button>
+                      )}
                     </div>
                   </div>
+                </div>
+              )}
+
+              {sslInfo && (
+                <div className="p-4 rounded border bg-muted space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {getSSLStatusIcon(sslInfo.status)}
+                      <span className={`font-semibold ${getSSLStatusColor(sslInfo.status)}`}>
+                        {sslInfo.error ? 'SSL Check Failed' : 
+                         sslInfo.status === 'valid' ? 'Certificate Valid' :
+                         sslInfo.status === 'warning' ? 'Expiring Soon' :
+                         sslInfo.status === 'critical' ? 'Expiring Very Soon' : 'Certificate Expired'}
+                      </span>
+                    </div>
+                    {sslInfo.daysUntilExpiry !== undefined && !sslInfo.error && (
+                      <span className={`text-sm font-mono ${getSSLStatusColor(sslInfo.status)}`}>
+                        {sslInfo.daysUntilExpiry} days left
+                      </span>
+                    )}
+                  </div>
+
+                  {sslInfo.error ? (
+                    <div className="text-sm text-terminal-gray">{sslInfo.error}</div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="space-y-1">
+                        <div className="text-xs text-terminal-gray">Hostname</div>
+                        <div className="font-mono text-xs">{sslInfo.hostname}</div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="text-xs text-terminal-gray flex items-center gap-1">
+                          <Calendar className="h-3 w-3" /> Valid Until
+                        </div>
+                        <div className={`font-mono text-xs ${getSSLStatusColor(sslInfo.status)}`}>
+                          {new Date(sslInfo.validTo).toLocaleDateString()}
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="text-xs text-terminal-gray">Valid From</div>
+                        <div className="font-mono text-xs">
+                          {new Date(sslInfo.validFrom).toLocaleDateString()}
+                        </div>
+                      </div>
+
+                      {sslInfo.issuer && (
+                        <div className="space-y-1">
+                          <div className="text-xs text-terminal-gray">Issuer</div>
+                          <div className="font-mono text-xs truncate">{sslInfo.issuer}</div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 
