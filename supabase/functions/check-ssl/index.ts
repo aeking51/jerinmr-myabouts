@@ -22,51 +22,77 @@ serve(async (req) => {
 
     // Clean hostname
     const cleanHostname = hostname.replace(/^https?:\/\//, '').split('/')[0].split(':')[0];
+    console.log(`Checking SSL for: ${cleanHostname}`);
 
-    // Connect via TLS to get certificate info
-    const conn = await Deno.connectTls({
-      hostname: cleanHostname,
-      port: 443,
+    // Use crt.sh API to get certificate information
+    const crtShUrl = `https://crt.sh/?q=${encodeURIComponent(cleanHostname)}&output=json`;
+    
+    const response = await fetch(crtShUrl, {
+      headers: {
+        'User-Agent': 'SSL-Checker/1.0'
+      }
     });
 
-    const cert = conn.peerCertificate;
-    conn.close();
+    if (!response.ok) {
+      console.error(`crt.sh API error: ${response.status}`);
+      throw new Error('Failed to fetch certificate data');
+    }
 
-    if (!cert) {
+    const certificates = await response.json();
+    console.log(`Found ${certificates.length} certificates`);
+
+    if (!certificates || certificates.length === 0) {
       return new Response(
-        JSON.stringify({ error: 'Could not retrieve certificate' }),
+        JSON.stringify({ error: 'No certificates found for this domain' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Parse certificate dates
-    const notBefore = cert.notBefore ? new Date(cert.notBefore) : null;
-    const notAfter = cert.notAfter ? new Date(cert.notAfter) : null;
+    // Filter for the most recent, non-expired certificate
     const now = new Date();
+    const validCerts = certificates
+      .filter((cert: any) => {
+        const notAfter = new Date(cert.not_after);
+        return notAfter > now;
+      })
+      .sort((a: any, b: any) => {
+        return new Date(b.not_after).getTime() - new Date(a.not_after).getTime();
+      });
 
+    // Get the certificate with the latest expiry (most likely the current one)
+    const latestCert = validCerts[0] || certificates[0];
+    
+    if (!latestCert) {
+      return new Response(
+        JSON.stringify({ error: 'No valid certificates found' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const notBefore = new Date(latestCert.not_before);
+    const notAfter = new Date(latestCert.not_after);
+    
     // Calculate days until expiry
-    const daysUntilExpiry = notAfter 
-      ? Math.floor((notAfter.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-      : null;
+    const daysUntilExpiry = Math.floor((notAfter.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
     // Determine status
     let status = 'valid';
-    if (daysUntilExpiry !== null) {
-      if (daysUntilExpiry < 0) status = 'expired';
-      else if (daysUntilExpiry <= 7) status = 'critical';
-      else if (daysUntilExpiry <= 30) status = 'warning';
-    }
+    if (daysUntilExpiry < 0) status = 'expired';
+    else if (daysUntilExpiry <= 7) status = 'critical';
+    else if (daysUntilExpiry <= 30) status = 'warning';
+
+    console.log(`Certificate status: ${status}, expires in ${daysUntilExpiry} days`);
 
     return new Response(
       JSON.stringify({
         hostname: cleanHostname,
-        issuer: cert.issuer,
-        subject: cert.subject,
-        validFrom: notBefore?.toISOString(),
-        validTo: notAfter?.toISOString(),
+        issuer: latestCert.issuer_name || 'Unknown',
+        subject: latestCert.common_name || cleanHostname,
+        validFrom: notBefore.toISOString(),
+        validTo: notAfter.toISOString(),
         daysUntilExpiry,
         status,
-        serialNumber: cert.serialNumber,
+        serialNumber: latestCert.serial_number || 'N/A',
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
@@ -75,7 +101,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         error: error.message || 'Failed to check SSL certificate',
-        details: 'The site may not support HTTPS or is unreachable'
+        details: 'Could not retrieve certificate information. The domain may not have a valid SSL certificate.'
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
