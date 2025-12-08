@@ -4,7 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Hash, FileCode, Code2, Copy, Info, Globe, Loader2, CheckCircle, XCircle, Clock, Shield, ArrowRight, AlertTriangle, Calendar, Zap, Lock, RefreshCw, Network } from 'lucide-react';
+import { Hash, FileCode, Code2, Copy, Info, Globe, Loader2, CheckCircle, XCircle, Clock, Shield, ArrowRight, AlertTriangle, Calendar, Zap, Lock, RefreshCw, Network, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -46,6 +46,22 @@ interface DNSInfo {
   error?: string;
 }
 
+interface HeadersInfo {
+  url: string;
+  statusCode: number;
+  statusText: string;
+  headers: Record<string, string>;
+  categorized: {
+    security: Record<string, string>;
+    cache: Record<string, string>;
+    other: Record<string, string>;
+  };
+  securityScore: number;
+  maxSecurityScore: number;
+  totalHeaders: number;
+  error?: string;
+}
+
 export function UtilityToolsSection() {
   const [base64Input, setBase64Input] = useState('');
   const [base64Output, setBase64Output] = useState('');
@@ -61,6 +77,9 @@ export function UtilityToolsSection() {
   const [isCheckingSSL, setIsCheckingSSL] = useState(false);
   const [dnsInfo, setDnsInfo] = useState<DNSInfo | null>(null);
   const [isCheckingDNS, setIsCheckingDNS] = useState(false);
+  const [headersInfo, setHeadersInfo] = useState<HeadersInfo | null>(null);
+  const [isCheckingHeaders, setIsCheckingHeaders] = useState(false);
+  const [expandedHeaderSection, setExpandedHeaderSection] = useState<string | null>('security');
   const handleBase64Encode = () => {
     try {
       const encoded = btoa(base64Input);
@@ -359,6 +378,69 @@ export function UtilityToolsSection() {
     if (time < 100) return 'text-emerald-400';
     if (time < 200) return 'text-yellow-500';
     return 'text-orange-500';
+  };
+
+  const handleHeadersCheck = async () => {
+    if (!websiteUrl.trim()) {
+      toast.error('Please enter a URL first');
+      return;
+    }
+
+    setIsCheckingHeaders(true);
+    setHeadersInfo(null);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-headers', {
+        body: { url: websiteUrl.trim() }
+      });
+
+      if (error) throw error;
+
+      if (data.error) {
+        setHeadersInfo({ 
+          url: websiteUrl.trim(),
+          error: data.error,
+          statusCode: 0,
+          statusText: '',
+          headers: {},
+          categorized: { security: {}, cache: {}, other: {} },
+          securityScore: 0,
+          maxSecurityScore: 7,
+          totalHeaders: 0
+        });
+        toast.error(data.error);
+      } else {
+        setHeadersInfo(data);
+        toast.success(`Found ${data.totalHeaders} headers`);
+      }
+    } catch (error) {
+      console.error('Headers check error:', error);
+      toast.error('Failed to fetch headers');
+      setHeadersInfo({
+        url: websiteUrl.trim(),
+        error: 'Failed to connect to headers service',
+        statusCode: 0,
+        statusText: '',
+        headers: {},
+        categorized: { security: {}, cache: {}, other: {} },
+        securityScore: 0,
+        maxSecurityScore: 7,
+        totalHeaders: 0
+      });
+    } finally {
+      setIsCheckingHeaders(false);
+    }
+  };
+
+  const getSecurityScoreColor = (score: number, max: number) => {
+    const percentage = (score / max) * 100;
+    if (percentage >= 70) return 'text-green-500';
+    if (percentage >= 40) return 'text-yellow-500';
+    return 'text-orange-500';
+  };
+
+  const toggleHeaderSection = (section: string) => {
+    setExpandedHeaderSection(prev => prev === section ? null : section);
   };
 
   return (
@@ -687,7 +769,7 @@ export function UtilityToolsSection() {
                           {websiteStatus.url.startsWith('https://') ? 'SSL/TLS Enabled' : 'No SSL (HTTP only)'}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <Button
                           variant="outline"
                           size="sm"
@@ -700,7 +782,21 @@ export function UtilityToolsSection() {
                           ) : (
                             <Network className="h-3 w-3 mr-1" />
                           )}
-                          DNS Lookup
+                          DNS
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleHeadersCheck}
+                          disabled={isCheckingHeaders}
+                          className="h-6 text-xs"
+                        >
+                          {isCheckingHeaders ? (
+                            <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                          ) : (
+                            <FileText className="h-3 w-3 mr-1" />
+                          )}
+                          Headers
                         </Button>
                         {websiteStatus.url.startsWith('https://') && (
                           <Button
@@ -715,7 +811,7 @@ export function UtilityToolsSection() {
                             ) : (
                               <Shield className="h-3 w-3 mr-1" />
                             )}
-                            Check SSL
+                            SSL
                           </Button>
                         )}
                       </div>
@@ -845,6 +941,131 @@ export function UtilityToolsSection() {
                           <div className="font-mono text-xs truncate">{sslInfo.issuer}</div>
                         </div>
                       )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {headersInfo && (
+                <div className="p-4 rounded border bg-muted space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileText className={`h-4 w-4 ${headersInfo.error ? 'text-destructive' : 'text-green-500'}`} />
+                      <span className={`font-semibold ${headersInfo.error ? 'text-destructive' : 'text-green-500'}`}>
+                        {headersInfo.error ? 'Headers Fetch Failed' : 'HTTP Headers'}
+                      </span>
+                    </div>
+                    {!headersInfo.error && (
+                      <div className="flex items-center gap-3">
+                        <span className={`text-xs font-mono ${getSecurityScoreColor(headersInfo.securityScore, headersInfo.maxSecurityScore)}`}>
+                          Security: {headersInfo.securityScore}/{headersInfo.maxSecurityScore}
+                        </span>
+                        <span className="text-xs text-terminal-gray">
+                          {headersInfo.totalHeaders} headers
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {headersInfo.error ? (
+                    <div className="text-sm text-terminal-gray">{headersInfo.error}</div>
+                  ) : (
+                    <div className="space-y-2">
+                      {/* Security Headers */}
+                      <div className="border border-border rounded overflow-hidden">
+                        <button
+                          onClick={() => toggleHeaderSection('security')}
+                          className="w-full flex items-center justify-between p-2 bg-background/50 hover:bg-background/70 transition-colors"
+                        >
+                          <div className="flex items-center gap-2 text-xs font-medium">
+                            <Shield className="h-3 w-3 text-green-500" />
+                            Security Headers ({Object.keys(headersInfo.categorized.security).length})
+                          </div>
+                          {expandedHeaderSection === 'security' ? (
+                            <ChevronUp className="h-3 w-3" />
+                          ) : (
+                            <ChevronDown className="h-3 w-3" />
+                          )}
+                        </button>
+                        {expandedHeaderSection === 'security' && (
+                          <div className="p-2 space-y-1 max-h-[150px] overflow-y-auto">
+                            {Object.keys(headersInfo.categorized.security).length === 0 ? (
+                              <div className="text-xs text-terminal-gray italic">No security headers found</div>
+                            ) : (
+                              Object.entries(headersInfo.categorized.security).map(([key, value]) => (
+                                <div key={key} className="text-xs">
+                                  <span className="font-mono text-terminal-green">{key}:</span>
+                                  <span className="font-mono text-terminal-gray ml-1 break-all">{value}</span>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Cache Headers */}
+                      <div className="border border-border rounded overflow-hidden">
+                        <button
+                          onClick={() => toggleHeaderSection('cache')}
+                          className="w-full flex items-center justify-between p-2 bg-background/50 hover:bg-background/70 transition-colors"
+                        >
+                          <div className="flex items-center gap-2 text-xs font-medium">
+                            <Clock className="h-3 w-3 text-yellow-500" />
+                            Cache Headers ({Object.keys(headersInfo.categorized.cache).length})
+                          </div>
+                          {expandedHeaderSection === 'cache' ? (
+                            <ChevronUp className="h-3 w-3" />
+                          ) : (
+                            <ChevronDown className="h-3 w-3" />
+                          )}
+                        </button>
+                        {expandedHeaderSection === 'cache' && (
+                          <div className="p-2 space-y-1 max-h-[150px] overflow-y-auto">
+                            {Object.keys(headersInfo.categorized.cache).length === 0 ? (
+                              <div className="text-xs text-terminal-gray italic">No cache headers found</div>
+                            ) : (
+                              Object.entries(headersInfo.categorized.cache).map(([key, value]) => (
+                                <div key={key} className="text-xs">
+                                  <span className="font-mono text-terminal-green">{key}:</span>
+                                  <span className="font-mono text-terminal-gray ml-1 break-all">{value}</span>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Other Headers */}
+                      <div className="border border-border rounded overflow-hidden">
+                        <button
+                          onClick={() => toggleHeaderSection('other')}
+                          className="w-full flex items-center justify-between p-2 bg-background/50 hover:bg-background/70 transition-colors"
+                        >
+                          <div className="flex items-center gap-2 text-xs font-medium">
+                            <FileText className="h-3 w-3 text-blue-500" />
+                            Other Headers ({Object.keys(headersInfo.categorized.other).length})
+                          </div>
+                          {expandedHeaderSection === 'other' ? (
+                            <ChevronUp className="h-3 w-3" />
+                          ) : (
+                            <ChevronDown className="h-3 w-3" />
+                          )}
+                        </button>
+                        {expandedHeaderSection === 'other' && (
+                          <div className="p-2 space-y-1 max-h-[150px] overflow-y-auto">
+                            {Object.keys(headersInfo.categorized.other).length === 0 ? (
+                              <div className="text-xs text-terminal-gray italic">No other headers found</div>
+                            ) : (
+                              Object.entries(headersInfo.categorized.other).map(([key, value]) => (
+                                <div key={key} className="text-xs">
+                                  <span className="font-mono text-terminal-green">{key}:</span>
+                                  <span className="font-mono text-terminal-gray ml-1 break-all">{value}</span>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
