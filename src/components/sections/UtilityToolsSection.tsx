@@ -4,7 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Hash, FileCode, Code2, Copy, Info, Globe, Loader2, CheckCircle, XCircle, Clock, Shield, ArrowRight, AlertTriangle, Calendar, Zap, Lock, RefreshCw } from 'lucide-react';
+import { Hash, FileCode, Code2, Copy, Info, Globe, Loader2, CheckCircle, XCircle, Clock, Shield, ArrowRight, AlertTriangle, Calendar, Zap, Lock, RefreshCw, Network } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -36,6 +36,16 @@ interface SSLCertInfo {
   error?: string;
 }
 
+interface DNSInfo {
+  hostname: string;
+  dnsLookupTime: number;
+  ipv4Addresses: string[];
+  ipv6Addresses: string[];
+  nameservers: string[];
+  resolvedAt: string;
+  error?: string;
+}
+
 export function UtilityToolsSection() {
   const [base64Input, setBase64Input] = useState('');
   const [base64Output, setBase64Output] = useState('');
@@ -49,6 +59,8 @@ export function UtilityToolsSection() {
   const [websiteHistory, setWebsiteHistory] = useState<WebsiteStatus[]>([]);
   const [sslInfo, setSSLInfo] = useState<SSLCertInfo | null>(null);
   const [isCheckingSSL, setIsCheckingSSL] = useState(false);
+  const [dnsInfo, setDnsInfo] = useState<DNSInfo | null>(null);
+  const [isCheckingDNS, setIsCheckingDNS] = useState(false);
   const handleBase64Encode = () => {
     try {
       const encoded = btoa(base64Input);
@@ -289,6 +301,64 @@ export function UtilityToolsSection() {
       case 'F': return 'text-destructive bg-destructive/10';
       default: return 'text-terminal-gray bg-muted';
     }
+  };
+
+  const handleDNSLookup = async () => {
+    if (!websiteUrl.trim()) {
+      toast.error('Please enter a URL first');
+      return;
+    }
+
+    let hostname = websiteUrl.trim();
+    hostname = hostname.replace(/^https?:\/\//, '').split('/')[0].split(':')[0];
+
+    setIsCheckingDNS(true);
+    setDnsInfo(null);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('dns-lookup', {
+        body: { hostname }
+      });
+
+      if (error) throw error;
+
+      if (data.error) {
+        setDnsInfo({ 
+          hostname, 
+          error: data.error,
+          dnsLookupTime: 0,
+          ipv4Addresses: [],
+          ipv6Addresses: [],
+          nameservers: [],
+          resolvedAt: new Date().toISOString()
+        });
+        toast.error(data.error);
+      } else {
+        setDnsInfo(data);
+        toast.success(`DNS resolved in ${data.dnsLookupTime}ms`);
+      }
+    } catch (error) {
+      console.error('DNS lookup error:', error);
+      toast.error('Failed to perform DNS lookup');
+      setDnsInfo({
+        hostname,
+        error: 'Failed to connect to DNS lookup service',
+        dnsLookupTime: 0,
+        ipv4Addresses: [],
+        ipv6Addresses: [],
+        nameservers: [],
+        resolvedAt: new Date().toISOString()
+      });
+    } finally {
+      setIsCheckingDNS(false);
+    }
+  };
+
+  const getDNSTimeColor = (time: number) => {
+    if (time < 50) return 'text-green-500';
+    if (time < 100) return 'text-emerald-400';
+    if (time < 200) return 'text-yellow-500';
+    return 'text-orange-500';
   };
 
   return (
@@ -610,31 +680,118 @@ export function UtilityToolsSection() {
                   </div>
 
                   <div className="pt-2 border-t border-border">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
                       <div className="flex items-center gap-2 text-xs text-terminal-gray">
                         <Shield className="h-3 w-3" />
                         <span>
                           {websiteStatus.url.startsWith('https://') ? 'SSL/TLS Enabled' : 'No SSL (HTTP only)'}
                         </span>
                       </div>
-                      {websiteStatus.url.startsWith('https://') && (
+                      <div className="flex items-center gap-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={handleSSLCheck}
-                          disabled={isCheckingSSL}
+                          onClick={handleDNSLookup}
+                          disabled={isCheckingDNS}
                           className="h-6 text-xs"
                         >
-                          {isCheckingSSL ? (
+                          {isCheckingDNS ? (
                             <Loader2 className="h-3 w-3 animate-spin mr-1" />
                           ) : (
-                            <Shield className="h-3 w-3 mr-1" />
+                            <Network className="h-3 w-3 mr-1" />
                           )}
-                          Check SSL
+                          DNS Lookup
                         </Button>
-                      )}
+                        {websiteStatus.url.startsWith('https://') && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleSSLCheck}
+                            disabled={isCheckingSSL}
+                            className="h-6 text-xs"
+                          >
+                            {isCheckingSSL ? (
+                              <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                            ) : (
+                              <Shield className="h-3 w-3 mr-1" />
+                            )}
+                            Check SSL
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {dnsInfo && (
+                <div className="p-4 rounded border bg-muted space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Network className={`h-4 w-4 ${dnsInfo.error ? 'text-destructive' : 'text-green-500'}`} />
+                      <span className={`font-semibold ${dnsInfo.error ? 'text-destructive' : 'text-green-500'}`}>
+                        {dnsInfo.error ? 'DNS Lookup Failed' : 'DNS Resolved'}
+                      </span>
+                    </div>
+                    {!dnsInfo.error && (
+                      <span className={`text-sm font-mono ${getDNSTimeColor(dnsInfo.dnsLookupTime)}`}>
+                        {dnsInfo.dnsLookupTime}ms
+                      </span>
+                    )}
+                  </div>
+
+                  {dnsInfo.error ? (
+                    <div className="text-sm text-terminal-gray">{dnsInfo.error}</div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="space-y-1">
+                        <div className="text-xs text-terminal-gray">Hostname</div>
+                        <div className="font-mono text-xs">{dnsInfo.hostname}</div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="text-xs text-terminal-gray flex items-center gap-1">
+                          <Clock className="h-3 w-3" /> Lookup Time
+                        </div>
+                        <div className={`font-mono text-xs font-semibold ${getDNSTimeColor(dnsInfo.dnsLookupTime)}`}>
+                          {dnsInfo.dnsLookupTime}ms
+                        </div>
+                      </div>
+
+                      {dnsInfo.ipv4Addresses.length > 0 && (
+                        <div className="space-y-1 col-span-2">
+                          <div className="text-xs text-terminal-gray">IPv4 Addresses</div>
+                          <div className="font-mono text-xs flex flex-wrap gap-1">
+                            {dnsInfo.ipv4Addresses.map((ip, i) => (
+                              <span key={i} className="bg-background/50 px-1.5 py-0.5 rounded">{ip}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {dnsInfo.ipv6Addresses.length > 0 && (
+                        <div className="space-y-1 col-span-2">
+                          <div className="text-xs text-terminal-gray">IPv6 Addresses</div>
+                          <div className="font-mono text-xs flex flex-wrap gap-1">
+                            {dnsInfo.ipv6Addresses.map((ip, i) => (
+                              <span key={i} className="bg-background/50 px-1.5 py-0.5 rounded text-[10px]">{ip}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {dnsInfo.nameservers.length > 0 && (
+                        <div className="space-y-1 col-span-2">
+                          <div className="text-xs text-terminal-gray">Nameservers</div>
+                          <div className="font-mono text-xs flex flex-wrap gap-1">
+                            {dnsInfo.nameservers.map((ns, i) => (
+                              <span key={i} className="bg-background/50 px-1.5 py-0.5 rounded">{ns}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 
