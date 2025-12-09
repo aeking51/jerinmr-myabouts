@@ -6,7 +6,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TerminalPrompt } from '../TerminalPrompt';
-import { Calendar, Type, Search, X } from 'lucide-react';
+import { Calendar, Type, Search, X, Share2, Check } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Article {
   id: string;
@@ -24,6 +25,32 @@ export function ArticlesSection() {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('date-desc');
   const [searchQuery, setSearchQuery] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async (article: Article, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const url = `${window.location.origin}/articles/${article.slug}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: article.title,
+          url: url,
+        });
+      } catch (err) {
+        copyToClipboard(url);
+      }
+    } else {
+      copyToClipboard(url);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    toast.success('Link copied to clipboard!');
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     fetchArticles();
@@ -238,13 +265,23 @@ export function ArticlesSection() {
             <span className="text-xs font-mono text-muted-foreground">
               Article ID: {selectedArticle?.id.slice(0, 8)}
             </span>
-            <Button 
-              variant="outline" 
-              onClick={() => setSelectedArticle(null)}
-              className="font-mono text-xs border-terminal-green/50 hover:bg-terminal-green/10 hover:border-terminal-green"
-            >
-              Close [Esc]
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => selectedArticle && handleShare(selectedArticle)}
+                className="font-mono text-xs border-terminal-green/50 hover:bg-terminal-green/10 hover:border-terminal-green"
+              >
+                {copied ? <Check className="w-3 h-3 mr-1" /> : <Share2 className="w-3 h-3 mr-1" />}
+                {copied ? 'Copied!' : 'Share'}
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => setSelectedArticle(null)}
+                className="font-mono text-xs border-terminal-green/50 hover:bg-terminal-green/10 hover:border-terminal-green"
+              >
+                Close [Esc]
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
