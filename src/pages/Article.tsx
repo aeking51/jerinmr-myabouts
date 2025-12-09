@@ -108,64 +108,64 @@ export default function Article() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
+      <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        <div className="flex items-center justify-between gap-2 mb-4 sm:mb-8">
           <Button 
             variant="ghost" 
             onClick={() => navigate('/')}
-            className="font-mono text-sm"
+            className="font-mono text-xs sm:text-sm px-2 sm:px-4"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
+            <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
+            <span className="hidden xs:inline">Back</span>
           </Button>
           <Button 
             variant="outline" 
             onClick={handleShare}
-            className="font-mono text-sm border-terminal-green/50 hover:bg-terminal-green/10"
+            className="font-mono text-xs sm:text-sm border-terminal-green/50 hover:bg-terminal-green/10 px-2 sm:px-4"
           >
             {copied ? (
-              <Check className="w-4 h-4 mr-2" />
+              <Check className="w-4 h-4 sm:mr-2" />
             ) : (
-              <Share2 className="w-4 h-4 mr-2" />
+              <Share2 className="w-4 h-4 sm:mr-2" />
             )}
-            {copied ? 'Copied!' : 'Share'}
+            <span className="hidden sm:inline">{copied ? 'Copied!' : 'Share'}</span>
           </Button>
         </div>
 
-        <article className="space-y-6">
-          <header className="border-b border-terminal-green/30 pb-6">
-            <h1 className="font-mono text-3xl md:text-4xl text-terminal-green leading-tight mb-4">
+        <article className="space-y-4 sm:space-y-6">
+          <header className="border-b border-terminal-green/30 pb-4 sm:pb-6">
+            <h1 className="font-mono text-xl sm:text-2xl md:text-4xl text-terminal-green leading-tight mb-3 sm:mb-4">
               {article.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-4 text-sm font-mono text-muted-foreground">
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-4 h-4" />
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm font-mono text-muted-foreground">
+              <span className="flex items-center gap-1 sm:gap-1.5">
+                <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                 {new Date(article.created_at).toLocaleDateString('en-US', { 
                   year: 'numeric', 
-                  month: 'long', 
+                  month: 'short', 
                   day: 'numeric' 
                 })}
               </span>
               <span className="w-1 h-1 rounded-full bg-terminal-green/50" />
               <span>{wordCount} words</span>
-              <span className="w-1 h-1 rounded-full bg-terminal-green/50" />
-              <span>~{Math.ceil(wordCount / 200)} min read</span>
+              <span className="hidden sm:block w-1 h-1 rounded-full bg-terminal-green/50" />
+              <span className="hidden sm:inline">~{Math.ceil(wordCount / 200)} min read</span>
             </div>
           </header>
 
           <div 
-            className="prose prose-sm md:prose-base max-w-none text-foreground prose-headings:text-terminal-green prose-a:text-terminal-green"
+            className="prose prose-sm max-w-none text-foreground prose-headings:text-terminal-green prose-a:text-terminal-green prose-p:text-sm sm:prose-p:text-base prose-headings:text-base sm:prose-headings:text-lg md:prose-headings:text-xl"
             dangerouslySetInnerHTML={{ __html: article.content }}
           />
         </article>
 
-        <footer className="mt-12 pt-6 border-t border-border">
+        <footer className="mt-8 sm:mt-12 pt-4 sm:pt-6 border-t border-border">
           <Button 
             variant="outline" 
             onClick={() => navigate('/')}
-            className="font-mono text-sm"
+            className="font-mono text-xs sm:text-sm"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
             Back to Home
           </Button>
         </footer>
