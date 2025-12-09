@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Newspaper, Calendar } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -37,8 +37,10 @@ export function NewsRibbon() {
   };
 
   const getPreview = (content: string, maxLength = 100) => {
-    if (content.length <= maxLength) return content;
-    return content.substring(0, maxLength) + '...';
+    // Strip HTML tags for preview
+    const stripped = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (stripped.length <= maxLength) return stripped;
+    return stripped.substring(0, maxLength) + '...';
   };
 
   if (articles.length === 0) return null;
@@ -96,6 +98,9 @@ export function NewsRibbon() {
                 <DialogTitle className="font-mono text-2xl text-terminal-green leading-tight mb-3">
                   {selectedArticle?.title}
                 </DialogTitle>
+                <DialogDescription className="sr-only">
+                  Article content view
+                </DialogDescription>
                 <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-muted-foreground">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5" />
@@ -107,11 +112,11 @@ export function NewsRibbon() {
                   </span>
                   <span className="w-1 h-1 rounded-full bg-terminal-green/50" />
                   <span>
-                    {selectedArticle && selectedArticle.content.split(/\s+/).length} words
+                    {selectedArticle && selectedArticle.content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(w => w).length} words
                   </span>
                   <span className="w-1 h-1 rounded-full bg-terminal-green/50" />
                   <span>
-                    ~{selectedArticle && Math.ceil(selectedArticle.content.split(/\s+/).length / 200)} min read
+                    ~{selectedArticle && Math.ceil(selectedArticle.content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(w => w).length / 200)} min read
                   </span>
                 </div>
               </div>
@@ -120,11 +125,10 @@ export function NewsRibbon() {
           
           <div className="flex-1 overflow-y-auto px-1 py-6 scroll-smooth">
             <div className="max-w-3xl mx-auto">
-              <div className="prose prose-sm max-w-none">
-                <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-foreground bg-muted/30 p-6 rounded-lg border border-border">
-                  {selectedArticle?.content}
-                </pre>
-              </div>
+              <div 
+                className="prose prose-sm max-w-none text-foreground"
+                dangerouslySetInnerHTML={{ __html: selectedArticle?.content || '' }}
+              />
             </div>
           </div>
           
