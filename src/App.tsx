@@ -10,6 +10,7 @@ import AdminVisitors from "./pages/AdminVisitors";
 import AdminArticles from "./pages/AdminArticles";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Article from "./pages/Article";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/articles/:slug" element={<Article />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/visitors" element={<AdminVisitors />} />
           <Route path="/admin/articles" element={<AdminArticles />} />
