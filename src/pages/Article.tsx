@@ -73,12 +73,13 @@ export default function Article() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-3xl mx-auto space-y-6">
-          <Skeleton className="h-8 w-32" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-6 w-48" />
-          <Skeleton className="h-96 w-full" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-12 h-12 border-4 border-terminal-green/20 rounded-full"></div>
+            <div className="w-12 h-12 border-4 border-terminal-green border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+          </div>
+          <p className="font-mono text-sm text-muted-foreground animate-pulse">Loading article...</p>
         </div>
       </div>
     );
