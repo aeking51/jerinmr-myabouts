@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Calendar, Share2, Check } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { ArrowLeft, Calendar, Share2, Check, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import DOMPurify from 'dompurify';
 
@@ -19,6 +19,7 @@ export default function Article() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [article, setArticle] = useState<Article | null>(null);
+  const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
 
@@ -78,10 +79,23 @@ export default function Article() {
         .select('*')
         .eq('slug', slug)
         .eq('published', true)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       setArticle(data);
+
+      // Fetch related articles (excluding current)
+      if (data) {
+        const { data: related } = await supabase
+          .from('articles')
+          .select('*')
+          .eq('published', true)
+          .neq('id', data.id)
+          .order('created_at', { ascending: false })
+          .limit(3);
+        
+        setRelatedArticles(related || []);
+      }
     } catch (error) {
       console.error('Error fetching article:', error);
     } finally {
@@ -203,6 +217,43 @@ export default function Article() {
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
           />
         </article>
+
+        {/* Related Articles Section */}
+        {relatedArticles.length > 0 && (
+          <section className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-terminal-green/30">
+            <h2 className="font-mono text-lg sm:text-xl text-terminal-green mb-4 sm:mb-6">
+              Related Articles
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedArticles.map((related) => {
+                const excerpt = related.content.replace(/<[^>]*>/g, ' ').substring(0, 100) + '...';
+                return (
+                  <Link key={related.id} to={`/articles/${related.slug}`}>
+                    <Card className="h-full border-terminal-green/20 hover:border-terminal-green/50 hover:bg-terminal-green/5 transition-all duration-200 cursor-pointer">
+                      <CardHeader className="p-4">
+                        <CardTitle className="font-mono text-sm sm:text-base text-terminal-green line-clamp-2">
+                          {related.title}
+                        </CardTitle>
+                        <CardDescription className="font-mono text-xs text-muted-foreground line-clamp-2 mt-2">
+                          {excerpt}
+                        </CardDescription>
+                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+                          <span className="font-mono text-xs text-muted-foreground">
+                            {new Date(related.created_at).toLocaleDateString('en-US', { 
+                              month: 'short', 
+                              day: 'numeric' 
+                            })}
+                          </span>
+                          <ArrowRight className="w-4 h-4 text-terminal-green" />
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         <footer className="mt-8 sm:mt-12 pt-4 sm:pt-6 border-t border-border">
           <Button 
