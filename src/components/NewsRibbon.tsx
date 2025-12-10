@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import DOMPurify from 'dompurify';
 
 interface Article {
   id: string;
@@ -155,7 +156,7 @@ export function NewsRibbon() {
             <div className="max-w-3xl mx-auto">
               <div 
                 className="prose prose-sm max-w-none text-foreground prose-p:text-sm prose-headings:text-base sm:prose-headings:text-lg"
-                dangerouslySetInnerHTML={{ __html: selectedArticle?.content || '' }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedArticle?.content || '') }}
               />
             </div>
           </div>

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { TerminalPrompt } from '../TerminalPrompt';
 import { Calendar, Type, Search, X, Share2, Check } from 'lucide-react';
 import { toast } from 'sonner';
+import DOMPurify from 'dompurify';
 
 interface Article {
   id: string;
@@ -256,7 +257,7 @@ export function ArticlesSection() {
             <div className="max-w-3xl mx-auto">
               <div 
                 className="prose prose-sm max-w-none text-foreground prose-p:text-sm prose-headings:text-base sm:prose-headings:text-lg"
-                dangerouslySetInnerHTML={{ __html: selectedArticle?.content || '' }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedArticle?.content || '') }}
               />
             </div>
           </div>

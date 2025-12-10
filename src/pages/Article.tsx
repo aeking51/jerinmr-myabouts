@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, Calendar, Share2, Check } from 'lucide-react';
 import { toast } from 'sonner';
+import DOMPurify from 'dompurify';
 
 interface Article {
   id: string;
@@ -155,7 +156,7 @@ export default function Article() {
 
           <div 
             className="prose prose-sm max-w-none text-foreground prose-headings:text-terminal-green prose-a:text-terminal-green prose-p:text-sm sm:prose-p:text-base prose-headings:text-base sm:prose-headings:text-lg md:prose-headings:text-xl"
-            dangerouslySetInnerHTML={{ __html: article.content }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
           />
         </article>
 
