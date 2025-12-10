@@ -28,6 +28,49 @@ export default function Article() {
     }
   }, [slug]);
 
+  // Update meta tags when article loads
+  useEffect(() => {
+    if (article) {
+      const plainTextContent = article.content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      const description = plainTextContent.substring(0, 155) + (plainTextContent.length > 155 ? '...' : '');
+      const url = window.location.href;
+
+      // Update document title
+      document.title = `${article.title} | JerinMR`;
+
+      // Helper to set or create meta tag
+      const setMetaTag = (property: string, content: string, isName = false) => {
+        const attr = isName ? 'name' : 'property';
+        let tag = document.querySelector(`meta[${attr}="${property}"]`);
+        if (!tag) {
+          tag = document.createElement('meta');
+          tag.setAttribute(attr, property);
+          document.head.appendChild(tag);
+        }
+        tag.setAttribute('content', content);
+      };
+
+      // Open Graph tags
+      setMetaTag('og:title', article.title);
+      setMetaTag('og:description', description);
+      setMetaTag('og:url', url);
+      setMetaTag('og:type', 'article');
+      
+      // Twitter Card tags
+      setMetaTag('twitter:card', 'summary', true);
+      setMetaTag('twitter:title', article.title, true);
+      setMetaTag('twitter:description', description, true);
+      
+      // Standard meta description
+      setMetaTag('description', description, true);
+    }
+
+    return () => {
+      // Reset title on unmount
+      document.title = 'JerinMR';
+    };
+  }, [article]);
+
   const fetchArticle = async () => {
     try {
       const { data, error } = await supabase
