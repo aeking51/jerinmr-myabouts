@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface Article {
   id: string;
@@ -22,6 +23,7 @@ export function useArticlesCache(limit?: number) {
   const [loading, setLoading] = useState(true);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [isCached, setIsCached] = useState(false);
+  const wasOfflineRef = useRef(false);
 
   // Load from cache
   const loadFromCache = useCallback((): Article[] => {
@@ -54,7 +56,7 @@ export function useArticlesCache(limit?: number) {
   }, []);
 
   // Fetch articles from Supabase
-  const fetchArticles = useCallback(async () => {
+  const fetchArticles = useCallback(async (showToast = false) => {
     setLoading(true);
     
     try {
@@ -85,6 +87,14 @@ export function useArticlesCache(limit?: number) {
             saveToCache(data);
           }
         }
+        
+        // Show toast when reconnected and refreshed
+        if (showToast) {
+          toast.success('Back online!', {
+            description: 'Articles have been refreshed with the latest content.',
+            duration: 4000,
+          });
+        }
       } else {
         // No data from server, try cache
         const cached = loadFromCache();
@@ -110,11 +120,21 @@ export function useArticlesCache(limit?: number) {
   useEffect(() => {
     const handleOnline = () => {
       setIsOffline(false);
-      fetchArticles(); // Refresh when back online
+      // Only show toast if we were actually offline before
+      const shouldShowToast = wasOfflineRef.current;
+      wasOfflineRef.current = false;
+      fetchArticles(shouldShowToast);
     };
     
     const handleOffline = () => {
       setIsOffline(true);
+      wasOfflineRef.current = true;
+      
+      toast.warning('You are offline', {
+        description: 'Showing cached articles. Some features may be limited.',
+        duration: 4000,
+      });
+      
       // Load from cache when going offline
       const cached = loadFromCache();
       if (cached.length > 0) {
@@ -143,8 +163,9 @@ export function useArticlesCache(limit?: number) {
 
     // Then fetch fresh data if online
     if (navigator.onLine) {
-      fetchArticles();
+      fetchArticles(false);
     } else {
+      wasOfflineRef.current = true;
       setLoading(false);
     }
   }, [fetchArticles, loadFromCache, limit]);
@@ -154,6 +175,6 @@ export function useArticlesCache(limit?: number) {
     loading,
     isOffline,
     isCached,
-    refetch: fetchArticles
+    refetch: () => fetchArticles(false)
   };
 }
