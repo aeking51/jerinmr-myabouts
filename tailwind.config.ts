@@ -110,6 +110,14 @@ export default {
 				'terminal-scan': {
 					'0%': { transform: 'translateY(-100%)' },
 					'100%': { transform: 'translateY(100vh)' }
+				},
+				'slide-down': {
+					'0%': { transform: 'translateY(-100%)', opacity: '0' },
+					'100%': { transform: 'translateY(0)', opacity: '1' }
+				},
+				'pulse-warning': {
+					'0%, 100%': { opacity: '1', transform: 'scale(1)' },
+					'50%': { opacity: '0.6', transform: 'scale(1.1)' }
 				}
 			},
 			animation: {
@@ -117,7 +125,9 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'terminal-blink': 'terminal-blink 1s infinite',
 				'terminal-typing': 'terminal-typing 3s steps(40, end)',
-				'terminal-scan': 'terminal-scan 2s linear infinite'
+				'terminal-scan': 'terminal-scan 2s linear infinite',
+				'slide-down': 'slide-down 0.4s ease-out',
+				'pulse-warning': 'pulse-warning 2s ease-in-out infinite'
 			}
 		}
 	},

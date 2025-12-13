@@ -4,6 +4,7 @@ import { TerminalHeader } from './TerminalHeader';
 import { TerminalNavigation } from './TerminalNavigation';
 import { WelcomeAnimation } from './WelcomeAnimation';
 import { ProfileSection } from './ProfileSection';
+import { NetworkWarning } from './NetworkWarning';
 import { AboutSection } from './sections/AboutSection';
 import { SkillsSection } from './sections/SkillsSection';
 import { ExperienceSection } from './sections/ExperienceSection';
@@ -87,6 +88,7 @@ export function TerminalPortfolio() {
 
   return (
     <div className="min-h-screen bg-background text-foreground px-2 sm:px-4">
+      <NetworkWarning />
       <div className="max-w-6xl mx-auto border border-border bg-card shadow-2xl min-h-screen sm:min-h-0">
         <TerminalHeader 
           onThemeToggle={handleThemeToggle} 
