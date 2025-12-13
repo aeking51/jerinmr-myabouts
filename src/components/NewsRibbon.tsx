@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Newspaper, Calendar, Share2, Check } from 'lucide-react';
+import { useState } from 'react';
+import { Newspaper, Calendar, Share2, Check, CloudOff } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import DOMPurify from 'dompurify';
+import { useArticlesCache } from '@/hooks/useArticlesCache';
 
 interface Article {
   id: string;
@@ -16,7 +16,7 @@ interface Article {
 }
 
 export function NewsRibbon() {
-  const [articles, setArticles] = useState<Article[]>([]);
+  const { articles, isCached, isOffline } = useArticlesCache(10);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -45,28 +45,7 @@ export function NewsRibbon() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  useEffect(() => {
-    fetchArticles();
-  }, []);
-
-  const fetchArticles = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('articles')
-        .select('*')
-        .eq('published', true)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (error) throw error;
-      setArticles(data || []);
-    } catch (error) {
-      console.error('Error fetching articles:', error);
-    }
-  };
-
   const getPreview = (content: string, maxLength = 100) => {
-    // Strip HTML tags for preview
     const stripped = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
     if (stripped.length <= maxLength) return stripped;
     return stripped.substring(0, maxLength) + '...';
@@ -80,6 +59,12 @@ export function NewsRibbon() {
         <div className="flex items-center gap-2 mb-3">
           <Newspaper className="w-4 h-4 text-terminal-green" />
           <span className="font-mono text-sm font-bold text-terminal-green">LATEST ARTICLES</span>
+          {isCached && (
+            <span className="flex items-center gap-1 text-terminal-amber font-mono text-xs">
+              <CloudOff className="w-3 h-3" />
+              {isOffline ? 'Offline' : 'Cached'}
+            </span>
+          )}
           <div className="flex-1 h-px bg-terminal-green/30" />
         </div>
         
@@ -147,6 +132,15 @@ export function NewsRibbon() {
                   <span className="hidden sm:inline">
                     ~{selectedArticle && Math.ceil(selectedArticle.content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(w => w).length / 200)} min read
                   </span>
+                  {isCached && (
+                    <>
+                      <span className="w-1 h-1 rounded-full bg-terminal-amber/50" />
+                      <span className="text-terminal-amber flex items-center gap-1">
+                        <CloudOff className="w-3 h-3" />
+                        Cached
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
