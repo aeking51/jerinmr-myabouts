@@ -228,7 +228,7 @@ export default function Article() {
               {relatedArticles.map((related) => {
                 const excerpt = related.content.replace(/<[^>]*>/g, ' ').substring(0, 100) + '...';
                 return (
-                  <Link key={related.id} to={`/articles/${related.slug}`}>
+                  <Link key={related.id} to={`/article/${related.slug}`}>
                     <Card className="h-full border-terminal-green/20 hover:border-terminal-green/50 hover:bg-terminal-green/5 transition-all duration-200 cursor-pointer">
                       <CardHeader className="p-4">
                         <CardTitle className="font-mono text-sm sm:text-base text-terminal-green line-clamp-2">
