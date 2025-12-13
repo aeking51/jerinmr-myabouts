@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TerminalPrompt } from '../TerminalPrompt';
-import { Calendar, Type, Search, X, Share2, Check } from 'lucide-react';
+import { Calendar, Type, Search, X, Share2, Check, CloudOff } from 'lucide-react';
 import { toast } from 'sonner';
 import DOMPurify from 'dompurify';
+import { useArticlesCache } from '@/hooks/useArticlesCache';
 
 interface Article {
   id: string;
@@ -21,8 +21,7 @@ interface Article {
 type SortOption = 'date-desc' | 'date-asc' | 'title-asc' | 'title-desc';
 
 export function ArticlesSection() {
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { articles, loading, isCached, isOffline } = useArticlesCache();
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('date-desc');
   const [searchQuery, setSearchQuery] = useState('');
@@ -53,27 +52,6 @@ export function ArticlesSection() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  useEffect(() => {
-    fetchArticles();
-  }, []);
-
-  const fetchArticles = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('articles')
-        .select('*')
-        .eq('published', true)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setArticles(data || []);
-    } catch (error) {
-      console.error('Error fetching articles:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const getFilteredArticles = () => {
     if (!searchQuery.trim()) return articles;
     
@@ -102,7 +80,6 @@ export function ArticlesSection() {
   };
 
   const getPreview = (content: string, maxLength = 150) => {
-    // Strip HTML tags for preview
     const stripped = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
     if (stripped.length <= maxLength) return stripped;
     return stripped.substring(0, maxLength) + '...';
@@ -125,7 +102,7 @@ export function ArticlesSection() {
       <div className="space-y-4">
         <TerminalPrompt
           command="ls articles/"
-          output="No published articles found."
+          output={isOffline ? "Offline - No cached articles available." : "No published articles found."}
           showCursor={false}
         />
       </div>
@@ -141,6 +118,16 @@ export function ArticlesSection() {
         output={`Found ${articles.length} article${articles.length !== 1 ? 's' : ''}`}
         showCursor={false}
       />
+      
+      {/* Offline/Cached indicator */}
+      {isCached && (
+        <div className="flex items-center gap-2 px-3 py-2 bg-terminal-amber/10 border border-terminal-amber/30 rounded-md animate-fade-in">
+          <CloudOff className="w-4 h-4 text-terminal-amber" />
+          <span className="font-mono text-xs text-terminal-amber">
+            {isOffline ? 'Offline Mode' : 'Showing cached content'} — Last synced recently
+          </span>
+        </div>
+      )}
       
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -248,6 +235,15 @@ export function ArticlesSection() {
                   <span className="hidden sm:inline">
                     ~{selectedArticle && Math.ceil(selectedArticle.content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(w => w).length / 200)} min read
                   </span>
+                  {isCached && (
+                    <>
+                      <span className="w-1 h-1 rounded-full bg-terminal-amber/50" />
+                      <span className="text-terminal-amber flex items-center gap-1">
+                        <CloudOff className="w-3 h-3" />
+                        Cached
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
