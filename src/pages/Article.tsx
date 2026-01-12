@@ -16,7 +16,8 @@ interface Article {
 }
 
 export default function Article() {
-  const { slug } = useParams<{ slug: string }>();
+  const { '*': slugPath } = useParams();
+  const slug = slugPath || '';
   const navigate = useNavigate();
   const [article, setArticle] = useState<Article | null>(null);
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
