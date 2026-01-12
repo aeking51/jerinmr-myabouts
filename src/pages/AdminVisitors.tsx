@@ -242,6 +242,9 @@ const AdminVisitors = () => {
             <Button onClick={() => navigate('/admin/articles')} variant="outline" size="sm">
               Articles
             </Button>
+            <Button onClick={() => navigate('/admin/quick-links')} variant="outline" size="sm">
+              Quick Links
+            </Button>
             <Button onClick={() => navigate('/admin/site-info')} variant="outline" size="sm">
               Site Info
             </Button>
