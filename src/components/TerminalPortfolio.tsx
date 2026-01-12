@@ -5,9 +5,7 @@ import { TerminalNavigation } from './TerminalNavigation';
 import { WelcomeAnimation } from './WelcomeAnimation';
 import { ProfileSection } from './ProfileSection';
 import { NetworkWarning } from './NetworkWarning';
-import { AboutSection } from './sections/AboutSection';
-import { SkillsSection } from './sections/SkillsSection';
-import { ExperienceSection } from './sections/ExperienceSection';
+import { ProfileInfoSection } from './sections/ProfileInfoSection';
 import { ContactSection } from './sections/ContactSection';
 import { NetworkToolsSection } from './sections/NetworkToolsSection';
 import { UtilityToolsSection } from './sections/UtilityToolsSection';
@@ -67,12 +65,8 @@ export function TerminalPortfolio() {
     switch (activeSection) {
       case 'home':
         return <ProfileSection />;
-      case 'about':
-        return <AboutSection />;
-      case 'skills':
-        return <SkillsSection />;
-      case 'experience':
-        return <ExperienceSection />;
+      case 'profile':
+        return <ProfileInfoSection />;
       case 'articles':
         return <ArticlesSection />;
       case 'contact':

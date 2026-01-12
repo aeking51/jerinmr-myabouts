@@ -6,9 +6,7 @@ interface NavigationProps {
 export function TerminalNavigation({ activeSection, onSectionChange }: NavigationProps) {
   const commands = [
     { id: 'home', command: 'cd ~', label: 'Home' },
-    { id: 'about', command: 'cat about.txt', label: 'About' },
-    { id: 'skills', command: 'ls skills/', label: 'Skills' },
-    { id: 'experience', command: 'cat experience.log', label: 'Experience' },
+    { id: 'profile', command: 'cat profile/*', label: 'Profile' },
     { id: 'articles', command: 'ls articles/', label: 'Articles' },
     { id: 'contact', command: 'whois jerinmr', label: 'Contact' },
     { id: 'network', command: 'netstat -a', label: 'Network Tools' },
