@@ -231,6 +231,9 @@ const AdminArticles = () => {
             <Button onClick={() => navigate('/admin/visitors')} variant="outline" size="sm">
               Visitors
             </Button>
+            <Button onClick={() => navigate('/admin/quick-links')} variant="outline" size="sm">
+              Quick Links
+            </Button>
             <Button onClick={() => navigate('/admin/site-info')} variant="outline" size="sm">
               Site Info
             </Button>

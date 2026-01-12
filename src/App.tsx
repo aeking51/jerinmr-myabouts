@@ -9,6 +9,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminVisitors from "./pages/AdminVisitors";
 import AdminArticles from "./pages/AdminArticles";
 import AdminSiteInfo from "./pages/AdminSiteInfo";
+import AdminQuickLinks from "./pages/AdminQuickLinks";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Article from "./pages/Article";
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/admin/visitors" element={<AdminVisitors />} />
           <Route path="/admin/articles" element={<AdminArticles />} />
           <Route path="/admin/site-info" element={<AdminSiteInfo />} />
+          <Route path="/admin/quick-links" element={<AdminQuickLinks />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
