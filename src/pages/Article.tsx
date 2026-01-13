@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/ca
 import { ArrowLeft, Calendar, Share2, Check, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import DOMPurify from 'dompurify';
+import { ArticleToolbar } from '@/components/ArticleToolbar';
 
 interface Article {
   id: string;
@@ -178,18 +179,21 @@ export default function Article() {
             <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
             <span className="hidden xs:inline">Back</span>
           </Button>
-          <Button 
-            variant="outline" 
-            onClick={handleShare}
-            className="font-mono text-xs sm:text-sm border-terminal-green/50 hover:bg-terminal-green/10 px-2 sm:px-4"
-          >
-            {copied ? (
-              <Check className="w-4 h-4 sm:mr-2" />
-            ) : (
-              <Share2 className="w-4 h-4 sm:mr-2" />
-            )}
-            <span className="hidden sm:inline">{copied ? 'Copied!' : 'Share'}</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <ArticleToolbar />
+            <Button 
+              variant="outline" 
+              onClick={handleShare}
+              className="font-mono text-xs sm:text-sm border-terminal-green/50 hover:bg-terminal-green/10 px-2 sm:px-4"
+            >
+              {copied ? (
+                <Check className="w-4 h-4 sm:mr-2" />
+              ) : (
+                <Share2 className="w-4 h-4 sm:mr-2" />
+              )}
+              <span className="hidden sm:inline">{copied ? 'Copied!' : 'Share'}</span>
+            </Button>
+          </div>
         </div>
 
         <article className="space-y-4 sm:space-y-6">
@@ -215,6 +219,7 @@ export default function Article() {
 
           <div 
             className="prose prose-sm max-w-none text-foreground prose-headings:text-terminal-green prose-a:text-terminal-green prose-p:text-sm sm:prose-p:text-base prose-headings:text-base sm:prose-headings:text-lg md:prose-headings:text-xl"
+            style={{ fontSize: 'var(--article-font-scale, 100%)' }}
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
           />
         </article>
