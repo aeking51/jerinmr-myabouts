@@ -214,7 +214,7 @@ export default function Article() {
           </header>
 
           <div 
-            className="prose prose-sm max-w-none text-foreground prose-headings:text-terminal-green prose-a:text-terminal-green prose-p:text-sm sm:prose-p:text-base prose-headings:text-base sm:prose-headings:text-lg md:prose-headings:text-xl"
+            className="prose prose-sm max-w-none rounded-lg p-4 sm:p-6 bg-[hsl(var(--article-body))] text-[hsl(var(--article-body-foreground))] prose-headings:text-[hsl(var(--article-body-foreground))] prose-a:text-terminal-green prose-p:text-sm sm:prose-p:text-base prose-headings:text-base sm:prose-headings:text-lg md:prose-headings:text-xl prose-strong:text-[hsl(var(--article-body-foreground))]"
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
           />
         </article>
