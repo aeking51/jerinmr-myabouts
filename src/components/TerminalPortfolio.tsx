@@ -13,7 +13,10 @@ import { ArticlesSection } from './sections/ArticlesSection';
 
 export function TerminalPortfolio() {
   const navigate = useNavigate();
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(() => {
+    // Skip animation if already played this session
+    return sessionStorage.getItem('welcomeAnimationPlayed') === 'true';
+  });
   const [activeSection, setActiveSection] = useState('home');
   const [theme, setTheme] = useState<'dark' | 'light' | 'eye-comfort'>('dark');
   const [visitorIP, setVisitorIP] = useState<string>('');
@@ -59,7 +62,10 @@ export function TerminalPortfolio() {
 
   const renderSection = () => {
     if (!isLoaded) {
-      return <WelcomeAnimation onComplete={() => setIsLoaded(true)} />;
+      return <WelcomeAnimation onComplete={() => {
+        sessionStorage.setItem('welcomeAnimationPlayed', 'true');
+        setIsLoaded(true);
+      }} />;
     }
 
     switch (activeSection) {
