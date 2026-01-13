@@ -19,6 +19,7 @@ export default {
 		},
 		extend: {
 			fontFamily: {
+				'sans': ['Fira Code', 'Ubuntu Mono', 'Courier New', 'monospace'],
 				'mono': ['Fira Code', 'Ubuntu Mono', 'Courier New', 'monospace'],
 				'terminal': ['Ubuntu Mono', 'Fira Code', 'monospace'],
 			},
