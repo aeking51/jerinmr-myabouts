@@ -13,9 +13,7 @@ import { ArticlesSection } from './sections/ArticlesSection';
 
 export function TerminalPortfolio() {
   const navigate = useNavigate();
-  // Check if user has already visited (skip animation on return visits)
-  const hasVisited = sessionStorage.getItem('hasVisitedHome') === 'true';
-  const [isLoaded, setIsLoaded] = useState(hasVisited);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [theme, setTheme] = useState<'dark' | 'light' | 'eye-comfort'>('dark');
   const [visitorIP, setVisitorIP] = useState<string>('');
@@ -59,14 +57,9 @@ export function TerminalPortfolio() {
     });
   };
 
-  const handleAnimationComplete = () => {
-    sessionStorage.setItem('hasVisitedHome', 'true');
-    setIsLoaded(true);
-  };
-
   const renderSection = () => {
     if (!isLoaded) {
-      return <WelcomeAnimation onComplete={handleAnimationComplete} />;
+      return <WelcomeAnimation onComplete={() => setIsLoaded(true)} />;
     }
 
     switch (activeSection) {
