@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 
+export type EasterEggEffect = 'matrix' | 'hacker' | 'sudo' | 'hello' | 'coffee' | 'party' | 'glitch' | 'rickroll' | 'ls' | 'cd' | 'whoami' | 'pwd' | 'cat' | 'rm' | 'ping' | 'help' | 'exit' | 'clear' | 'neofetch' | null;
+
 interface EasterEggEffectsProps {
-  effect: 'matrix' | 'hacker' | 'sudo' | 'hello' | 'coffee' | 'party' | 'glitch' | 'rickroll' | null;
+  effect: EasterEggEffect;
   onClear: () => void;
 }
 
@@ -166,6 +168,208 @@ function GlitchEffect() {
   );
 }
 
+function TerminalOutput({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
+      <div className="bg-card/95 border border-terminal-green p-6 rounded-lg shadow-2xl animate-scale-in max-w-md w-full mx-4">
+        <div className="font-mono text-sm space-y-1">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LsCommand() {
+  return (
+    <TerminalOutput>
+      <p className="text-terminal-gray">$ ls -la</p>
+      <p className="text-terminal-blue">drwxr-xr-x</p>
+      <p className="text-terminal-cyan">📁 skills/</p>
+      <p className="text-terminal-cyan">📁 projects/</p>
+      <p className="text-terminal-cyan">📁 secret_stuff/</p>
+      <p className="text-terminal-green">📄 resume.pdf</p>
+      <p className="text-terminal-green">📄 cover_letter.txt</p>
+      <p className="text-terminal-yellow">🔒 classified.zip</p>
+      <p className="text-terminal-red">💀 do_not_open.exe</p>
+      <p className="text-terminal-gray mt-2 text-xs">Total: 42 items (nice try!)</p>
+    </TerminalOutput>
+  );
+}
+
+function CdCommand() {
+  return (
+    <TerminalOutput>
+      <p className="text-terminal-gray">$ cd secret_stuff/</p>
+      <p className="text-terminal-red">bash: cd: secret_stuff/: Permission denied</p>
+      <p className="text-terminal-yellow mt-2">🔐 Nice try! This folder is protected.</p>
+      <p className="text-terminal-gray text-xs mt-1">Hint: Try &quot;sudo&quot; instead...</p>
+    </TerminalOutput>
+  );
+}
+
+function WhoamiCommand() {
+  return (
+    <TerminalOutput>
+      <p className="text-terminal-gray">$ whoami</p>
+      <p className="text-terminal-green">awesome_visitor</p>
+      <p className="text-terminal-cyan mt-2">UID: 1337 (elite)</p>
+      <p className="text-terminal-cyan">GID: 42 (hitchhikers)</p>
+      <p className="text-terminal-yellow">Groups: developers, coffee_addicts, night_owls</p>
+      <p className="text-terminal-gray text-xs mt-2">You are amazing! 🌟</p>
+    </TerminalOutput>
+  );
+}
+
+function PwdCommand() {
+  return (
+    <TerminalOutput>
+      <p className="text-terminal-gray">$ pwd</p>
+      <p className="text-terminal-green">/home/visitor/jerinmr-portfolio/easter-eggs</p>
+      <p className="text-terminal-cyan mt-2">📍 You are here: The secret corner of the internet</p>
+      <p className="text-terminal-gray text-xs">Coordinates: 10.8505° N, 76.2711° E (Kerala, India)</p>
+    </TerminalOutput>
+  );
+}
+
+function CatCommand() {
+  return (
+    <TerminalOutput>
+      <p className="text-terminal-gray">$ cat secrets.txt</p>
+      <pre className="text-terminal-yellow mt-2 text-xs">
+{`
+   /\\_/\\  
+  ( o.o ) 
+   > ^ <
+  /|   |\\
+ (_|   |_)
+`}
+      </pre>
+      <p className="text-terminal-green">Meow! You found the cat! 🐱</p>
+      <p className="text-terminal-gray text-xs mt-1">Fun fact: This cat knows all the secrets.</p>
+    </TerminalOutput>
+  );
+}
+
+function RmCommand() {
+  return (
+    <TerminalOutput>
+      <p className="text-terminal-gray">$ rm -rf /</p>
+      <p className="text-terminal-red animate-pulse">⚠️ DANGER ZONE ⚠️</p>
+      <p className="text-terminal-red mt-2">rm: cannot remove &apos;/&apos;: Nice try!</p>
+      <p className="text-terminal-yellow mt-2">This is a protected system.</p>
+      <p className="text-terminal-gray text-xs mt-1">No websites were harmed in this attempt. 😅</p>
+    </TerminalOutput>
+  );
+}
+
+function PingCommand() {
+  return (
+    <TerminalOutput>
+      <p className="text-terminal-gray">$ ping localhost</p>
+      <p className="text-terminal-green">PING localhost (127.0.0.1): 56 data bytes</p>
+      <p className="text-terminal-cyan">64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.042 ms</p>
+      <p className="text-terminal-cyan">64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.069 ms</p>
+      <p className="text-terminal-cyan">64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.051 ms</p>
+      <p className="text-terminal-yellow mt-2">🏓 Pong! Connection is great!</p>
+    </TerminalOutput>
+  );
+}
+
+function HelpCommand() {
+  return (
+    <TerminalOutput>
+      <p className="text-terminal-gray">$ help</p>
+      <p className="text-terminal-green font-bold mt-2">Available Easter Egg Commands:</p>
+      <div className="grid grid-cols-2 gap-1 mt-2 text-xs">
+        <p className="text-terminal-cyan">hack</p><p className="text-terminal-gray">- Hacker mode</p>
+        <p className="text-terminal-cyan">matrix</p><p className="text-terminal-gray">- Matrix rain</p>
+        <p className="text-terminal-cyan">sudo</p><p className="text-terminal-gray">- Root access</p>
+        <p className="text-terminal-cyan">hello</p><p className="text-terminal-gray">- Greeting</p>
+        <p className="text-terminal-cyan">coffee</p><p className="text-terminal-gray">- Coffee break</p>
+        <p className="text-terminal-cyan">party</p><p className="text-terminal-gray">- Celebration</p>
+        <p className="text-terminal-cyan">ls</p><p className="text-terminal-gray">- List files</p>
+        <p className="text-terminal-cyan">whoami</p><p className="text-terminal-gray">- Who are you</p>
+        <p className="text-terminal-cyan">neofetch</p><p className="text-terminal-gray">- System info</p>
+      </div>
+      <p className="text-terminal-yellow mt-2 text-xs">🎮 Konami Code: ↑↑↓↓←→←→BA</p>
+    </TerminalOutput>
+  );
+}
+
+function ExitCommand() {
+  return (
+    <TerminalOutput>
+      <p className="text-terminal-gray">$ exit</p>
+      <p className="text-terminal-yellow mt-2">👋 Goodbye!</p>
+      <p className="text-terminal-cyan">Thanks for visiting!</p>
+      <p className="text-terminal-gray text-xs mt-2">Just kidding, you can&apos;t leave that easily! 😄</p>
+      <p className="text-terminal-green mt-1">Connection maintained.</p>
+    </TerminalOutput>
+  );
+}
+
+function ClearCommand() {
+  return (
+    <TerminalOutput>
+      <p className="text-terminal-gray">$ clear</p>
+      <p className="text-terminal-cyan mt-4 text-center">Screen cleared! ✨</p>
+      <p className="text-terminal-gray text-xs text-center mt-2">(But the memories remain...)</p>
+    </TerminalOutput>
+  );
+}
+
+function NeofetchCommand() {
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
+      <div className="bg-card/95 border border-terminal-green p-6 rounded-lg shadow-2xl animate-scale-in max-w-lg w-full mx-4">
+        <div className="font-mono text-xs flex gap-4">
+          <pre className="text-terminal-green">
+{`        _,met$$$$$gg.
+     ,g$$$$$$$$$$$$$$$P.
+   ,g$$P"     """Y$$.".
+  ,$$P'              \`$$$.
+',$$P       ,ggs.     \`$$b:
+\`d$$'     ,$P"'   .    $$$
+ $$P      d$'     ,    $$P
+ $$:      $$.   -    ,d$$'
+ $$;      Y$b._   _,d$P'
+ Y$$.    \`.\`"Y$$$$P"'
+ \`$$b      "-.__
+  \`Y$$
+   \`Y$$.
+     \`$$b.
+       \`Y$$b.
+          \`"Y$b._
+              \`"""
+`}
+          </pre>
+          <div className="text-terminal-gray space-y-0.5">
+            <p><span className="text-terminal-green">visitor</span>@<span className="text-terminal-green">jerinmr</span></p>
+            <p>------------------</p>
+            <p><span className="text-terminal-cyan">OS:</span> JerinOS 2.0</p>
+            <p><span className="text-terminal-cyan">Host:</span> Portfolio v3.0</p>
+            <p><span className="text-terminal-cyan">Kernel:</span> React 18.3.1</p>
+            <p><span className="text-terminal-cyan">Uptime:</span> Since 2024</p>
+            <p><span className="text-terminal-cyan">Shell:</span> zsh 5.9</p>
+            <p><span className="text-terminal-cyan">Terminal:</span> Web Browser</p>
+            <p><span className="text-terminal-cyan">CPU:</span> Your Brain</p>
+            <p><span className="text-terminal-cyan">Memory:</span> ∞ / ∞ MB</p>
+            <p className="pt-2">
+              <span className="inline-block w-3 h-3 bg-terminal-red mr-1"></span>
+              <span className="inline-block w-3 h-3 bg-terminal-green mr-1"></span>
+              <span className="inline-block w-3 h-3 bg-terminal-yellow mr-1"></span>
+              <span className="inline-block w-3 h-3 bg-terminal-blue mr-1"></span>
+              <span className="inline-block w-3 h-3 bg-terminal-magenta mr-1"></span>
+              <span className="inline-block w-3 h-3 bg-terminal-cyan"></span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function EasterEggEffects({ effect, onClear }: EasterEggEffectsProps) {
   useEffect(() => {
     if (effect) {
@@ -203,6 +407,28 @@ export function EasterEggEffects({ effect, onClear }: EasterEggEffectsProps) {
       return <PartyMode />;
     case 'glitch':
       return <GlitchEffect />;
+    case 'ls':
+      return <LsCommand />;
+    case 'cd':
+      return <CdCommand />;
+    case 'whoami':
+      return <WhoamiCommand />;
+    case 'pwd':
+      return <PwdCommand />;
+    case 'cat':
+      return <CatCommand />;
+    case 'rm':
+      return <RmCommand />;
+    case 'ping':
+      return <PingCommand />;
+    case 'help':
+      return <HelpCommand />;
+    case 'exit':
+      return <ExitCommand />;
+    case 'clear':
+      return <ClearCommand />;
+    case 'neofetch':
+      return <NeofetchCommand />;
     default:
       return null;
   }
