@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { type EasterEggEffect } from '@/components/EasterEggEffects';
 
 // Konami Code sequence
 const KONAMI_CODE = [
@@ -8,16 +9,25 @@ const KONAMI_CODE = [
 ];
 
 // Secret commands that can be typed anywhere
-const SECRET_COMMANDS = {
+const SECRET_COMMANDS: Record<string, EasterEggEffect> = {
   'hack': 'hacker',
   'matrix': 'matrix',
   'sudo': 'sudo',
   'hello': 'hello',
   'coffee': 'coffee',
   'party': 'party',
+  'ls': 'ls',
+  'cd': 'cd',
+  'whoami': 'whoami',
+  'pwd': 'pwd',
+  'cat': 'cat',
+  'rm': 'rm',
+  'ping': 'ping',
+  'help': 'help',
+  'exit': 'exit',
+  'clear': 'clear',
+  'neofetch': 'neofetch',
 };
-
-type EasterEggEffect = 'matrix' | 'hacker' | 'sudo' | 'hello' | 'coffee' | 'party' | 'glitch' | 'rickroll' | null;
 
 export function useEasterEggs() {
   const [konamiIndex, setKonamiIndex] = useState(0);
@@ -72,7 +82,7 @@ export function useEasterEggs() {
         // Check for secret commands
         for (const [command, effect] of Object.entries(SECRET_COMMANDS)) {
           if (newTyped.endsWith(command)) {
-            setActiveEffect(effect as EasterEggEffect);
+            setActiveEffect(effect);
             setTypedKeys('');
             setTimeout(() => setActiveEffect(null), 5000);
             break;
