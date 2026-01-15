@@ -10,6 +10,8 @@ import { ContactSection } from './sections/ContactSection';
 import { NetworkToolsSection } from './sections/NetworkToolsSection';
 import { UtilityToolsSection } from './sections/UtilityToolsSection';
 import { ArticlesSection } from './sections/ArticlesSection';
+import { EasterEggEffects } from './EasterEggEffects';
+import { useEasterEggs } from '@/hooks/useEasterEggs';
 
 export function TerminalPortfolio() {
   const navigate = useNavigate();
@@ -22,6 +24,7 @@ export function TerminalPortfolio() {
   const [visitorIP, setVisitorIP] = useState<string>('');
   const [visitorLocation, setVisitorLocation] = useState<string>('');
   const [adminClicks, setAdminClicks] = useState(0);
+  const { activeEffect, handleHeaderClick, clearEffect } = useEasterEggs();
 
   useEffect(() => {
     // Fetch visitor IP and location
@@ -89,10 +92,12 @@ export function TerminalPortfolio() {
   return (
     <div className="min-h-screen bg-background text-foreground px-2 sm:px-4">
       <NetworkWarning />
+      <EasterEggEffects effect={activeEffect} onClear={clearEffect} />
       <div className="max-w-6xl mx-auto border border-border bg-card shadow-2xl min-h-screen sm:min-h-0">
         <TerminalHeader 
           onThemeToggle={handleThemeToggle} 
           theme={theme}
+          onHeaderClick={handleHeaderClick}
         />
         
         {isLoaded && (
