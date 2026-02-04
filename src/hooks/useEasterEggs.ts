@@ -35,6 +35,7 @@ export function useEasterEggs() {
   const [typedKeys, setTypedKeys] = useState('');
   const [activeEffect, setActiveEffect] = useState<EasterEggEffect>(null);
   const [headerClickCount, setHeaderClickCount] = useState(0);
+  const [showSshSimulator, setShowSshSimulator] = useState(false);
 
   // Console Easter eggs - run once on mount
   useEffect(() => {
@@ -83,9 +84,15 @@ export function useEasterEggs() {
         // Check for secret commands
         for (const [command, effect] of Object.entries(SECRET_COMMANDS)) {
           if (newTyped.endsWith(command)) {
-            setActiveEffect(effect);
-            setTypedKeys('');
-            setTimeout(() => setActiveEffect(null), 5000);
+            // Special handling for SSH - open simulator instead of effect
+            if (command === 'ssh') {
+              setShowSshSimulator(true);
+              setTypedKeys('');
+            } else {
+              setActiveEffect(effect);
+              setTypedKeys('');
+              setTimeout(() => setActiveEffect(null), 5000);
+            }
             break;
           }
         }
@@ -120,5 +127,7 @@ export function useEasterEggs() {
     handleHeaderClick,
     triggerRickroll,
     clearEffect: () => setActiveEffect(null),
+    showSshSimulator,
+    closeSshSimulator: () => setShowSshSimulator(false),
   };
 }

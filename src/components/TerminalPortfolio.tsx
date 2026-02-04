@@ -11,6 +11,7 @@ import { NetworkToolsSection } from './sections/NetworkToolsSection';
 import { UtilityToolsSection } from './sections/UtilityToolsSection';
 import { ArticlesSection } from './sections/ArticlesSection';
 import { EasterEggEffects } from './EasterEggEffects';
+import { SshSimulator } from './SshSimulator';
 import { useEasterEggs } from '@/hooks/useEasterEggs';
 
 export function TerminalPortfolio() {
@@ -24,7 +25,7 @@ export function TerminalPortfolio() {
   const [visitorIP, setVisitorIP] = useState<string>('');
   const [visitorLocation, setVisitorLocation] = useState<string>('');
   const [adminClicks, setAdminClicks] = useState(0);
-  const { activeEffect, handleHeaderClick, clearEffect } = useEasterEggs();
+  const { activeEffect, handleHeaderClick, clearEffect, showSshSimulator, closeSshSimulator } = useEasterEggs();
 
   useEffect(() => {
     // Fetch visitor IP and location
@@ -93,6 +94,7 @@ export function TerminalPortfolio() {
     <div className="min-h-screen bg-background text-foreground px-2 sm:px-4">
       <NetworkWarning />
       <EasterEggEffects effect={activeEffect} onClear={clearEffect} />
+      {showSshSimulator && <SshSimulator onClose={closeSshSimulator} />}
       <div className="max-w-6xl mx-auto border border-border bg-card shadow-2xl min-h-screen sm:min-h-0">
         <TerminalHeader 
           onThemeToggle={handleThemeToggle} 
