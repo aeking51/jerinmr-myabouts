@@ -27,6 +27,7 @@ const SECRET_COMMANDS: Record<string, EasterEggEffect> = {
   'exit': 'exit',
   'clear': 'clear',
   'neofetch': 'neofetch',
+  'ssh': 'ssh',
 };
 
 export function useEasterEggs() {
