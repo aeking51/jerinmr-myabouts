@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export type EasterEggEffect = 'matrix' | 'hacker' | 'sudo' | 'hello' | 'coffee' | 'party' | 'glitch' | 'rickroll' | 'ls' | 'cd' | 'whoami' | 'pwd' | 'cat' | 'rm' | 'ping' | 'help' | 'exit' | 'clear' | 'neofetch' | 'ssh' | null;
+export type EasterEggEffect = 'matrix' | 'hacker' | 'sudo' | 'hello' | 'coffee' | 'party' | 'glitch' | 'rickroll' | 'ls' | 'cd' | 'whoami' | 'pwd' | 'cat' | 'rm' | 'ping' | 'help' | 'exit' | 'clear' | 'neofetch' | null;
 
 interface EasterEggEffectsProps {
   effect: EasterEggEffect;
@@ -370,41 +370,6 @@ function NeofetchCommand() {
   );
 }
 
-function SshCommand() {
-  return (
-    <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
-      <div className="bg-card/95 border border-terminal-green p-6 rounded-lg shadow-2xl animate-scale-in max-w-md w-full mx-4">
-        <div className="font-mono text-sm space-y-2">
-          <p className="text-terminal-gray">$ ssh visitor@secret-server.local</p>
-          <p className="text-terminal-cyan">Connecting to secret-server.local...</p>
-          <p className="text-terminal-yellow">🔐 Authenticating with RSA key...</p>
-          <div className="flex items-center gap-2 text-terminal-green">
-            <span className="animate-pulse">●</span>
-            <span>Establishing secure connection...</span>
-          </div>
-          <div className="border-t border-terminal-green/30 pt-3 mt-3">
-            <p className="text-terminal-green animate-pulse">✓ Connection established!</p>
-            <p className="text-terminal-cyan mt-2">Welcome to Secret Server v3.14</p>
-            <pre className="text-terminal-gray text-xs mt-2">
-{`┌─────────────────────────────────────┐
-│  🔒 SECURE SHELL - TOP SECRET 🔒    │
-├─────────────────────────────────────┤
-│  Last login: Just now               │
-│  From: Your Browser                 │
-│  Security: Maximum                  │
-│  Encryption: AES-256-GCM            │
-└─────────────────────────────────────┘`}
-            </pre>
-            <p className="text-terminal-yellow text-xs mt-3">
-              🎉 Just kidding! This is a portfolio, not a real server.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function EasterEggEffects({ effect, onClear }: EasterEggEffectsProps) {
   useEffect(() => {
     if (effect) {
@@ -464,8 +429,6 @@ export function EasterEggEffects({ effect, onClear }: EasterEggEffectsProps) {
       return <ClearCommand />;
     case 'neofetch':
       return <NeofetchCommand />;
-    case 'ssh':
-      return <SshCommand />;
     default:
       return null;
   }
