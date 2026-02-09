@@ -4,7 +4,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Hash, FileCode, Code2, Copy, Info, Globe, Loader2, CheckCircle, XCircle, Clock, Shield, ArrowRight, AlertTriangle, Calendar, Zap, Lock, RefreshCw, Network, FileText, ChevronDown, ChevronUp } from 'lucide-react';
+import { Hash, FileCode, Code2, Copy, Info, Globe, Loader2, CheckCircle, XCircle, Clock, Shield, ArrowRight, AlertTriangle, Calendar, Zap, Lock, RefreshCw, Network, FileText, ChevronDown, ChevronUp, Terminal } from 'lucide-react';
+import { SSHTerminal } from '@/components/SSHTerminal';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -451,11 +452,15 @@ export function UtilityToolsSection() {
       </div>
 
       <Tabs defaultValue="base64" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="base64">Base64</TabsTrigger>
           <TabsTrigger value="hash">Hash</TabsTrigger>
           <TabsTrigger value="json">JSON</TabsTrigger>
           <TabsTrigger value="website">Site Monitor</TabsTrigger>
+          <TabsTrigger value="ssh" className="flex items-center gap-1">
+            <Terminal className="h-3 w-3" />
+            SSH
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="base64" className="space-y-4">
@@ -1094,6 +1099,24 @@ export function UtilityToolsSection() {
                   </div>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="ssh" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Terminal className="h-5 w-5" />
+                Web SSH Client
+              </CardTitle>
+              <CardDescription className="flex items-start gap-2">
+                <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <span>Interactive SSH simulator. Type "connect" to start a session. Supports common commands like ls, cd, cat, and more. Try "help" for available commands.</span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SSHTerminal />
             </CardContent>
           </Card>
         </TabsContent>
