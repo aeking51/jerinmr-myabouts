@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Hash, FileCode, Code2, Copy, Info, Globe, Loader2, CheckCircle, XCircle, Clock, Shield, ArrowRight, AlertTriangle, Calendar, Zap, Lock, RefreshCw, Network, FileText, ChevronDown, ChevronUp, Terminal } from 'lucide-react';
 import { SSHTerminal } from '@/components/SSHTerminal';
+import { LiveSSHTerminal } from '@/components/LiveSSHTerminal';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -1112,11 +1113,22 @@ export function UtilityToolsSection() {
               </CardTitle>
               <CardDescription className="flex items-start gap-2">
                 <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>Interactive SSH simulator. Type "connect" to start a session. Supports common commands like ls, cd, cat, and more. Try "help" for available commands.</span>
+                <span>Demo mode simulates an SSH session. Live mode connects to a real server via your own WebSocket proxy (WebSSH2, Wetty, ttyd).</span>
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <SSHTerminal />
+              <Tabs defaultValue="demo" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-4">
+                  <TabsTrigger value="demo">Demo Mode</TabsTrigger>
+                  <TabsTrigger value="live">Live Mode</TabsTrigger>
+                </TabsList>
+                <TabsContent value="demo">
+                  <SSHTerminal />
+                </TabsContent>
+                <TabsContent value="live">
+                  <LiveSSHTerminal />
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </TabsContent>
