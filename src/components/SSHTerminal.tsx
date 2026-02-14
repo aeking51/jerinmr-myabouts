@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ExternalLink, Globe, Terminal, Play } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface TerminalLine {
   type: 'input' | 'output' | 'system' | 'error' | 'success' | 'ascii';
@@ -499,57 +502,144 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
     }
   };
 
+  const SSH_SERVICES = [
+    { name: 'ShellNGN', url: 'https://shellngn.com/', description: 'Full-featured web SSH client' },
+    { name: 'Sshwifty', url: 'https://sshwifty-demo.nirui.org/', description: 'Open-source web SSH & Telnet client' },
+  ];
+
+  const [selectedService, setSelectedService] = useState(SSH_SERVICES[0]);
+  const [showLiveSSH, setShowLiveSSH] = useState(false);
+
   return (
-    <div 
-      className="bg-background border border-border rounded-lg overflow-hidden h-[500px] flex flex-col"
-      onClick={() => inputRef.current?.focus()}
-    >
-      <div className="bg-muted px-3 py-2 border-b border-border flex items-center gap-2">
-        <div className="flex gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-destructive" />
-          <div className="w-3 h-3 rounded-full bg-terminal-amber" />
-          <div className="w-3 h-3 rounded-full bg-terminal-green" />
-        </div>
-        <span className="text-xs text-terminal-gray font-mono flex-1 text-center">
-          {session?.connected 
-            ? `${session.user}@${session.host} - SSH Session` 
-            : 'SSH Terminal - Not Connected'}
-        </span>
-        {session?.connected && (
-          <span className="text-xs text-terminal-green">● Connected</span>
-        )}
-      </div>
-      
-      <div 
-        ref={scrollRef}
-        className="flex-1 overflow-auto p-3 font-mono text-sm bg-background"
-      >
-        {lines.map((line, index) => (
-          <div 
-            key={index} 
-            className={`whitespace-pre-wrap ${getLineColor(line.type)}`}
-          >
-            {line.content}
+    <Tabs defaultValue="demo" className="w-full">
+      <TabsList className="grid w-full grid-cols-2 mb-2">
+        <TabsTrigger value="demo" className="flex items-center gap-1.5">
+          <Terminal className="h-3.5 w-3.5" />
+          Demo Terminal
+        </TabsTrigger>
+        <TabsTrigger value="live" className="flex items-center gap-1.5">
+          <Globe className="h-3.5 w-3.5" />
+          Live SSH
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="demo">
+        <div 
+          className="bg-background border border-border rounded-lg overflow-hidden h-[500px] flex flex-col"
+          onClick={() => inputRef.current?.focus()}
+        >
+          <div className="bg-muted px-3 py-2 border-b border-border flex items-center gap-2">
+            <div className="flex gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-destructive" />
+              <div className="w-3 h-3 rounded-full bg-terminal-amber" />
+              <div className="w-3 h-3 rounded-full bg-terminal-green" />
+            </div>
+            <span className="text-xs text-terminal-gray font-mono flex-1 text-center">
+              {session?.connected 
+                ? `${session.user}@${session.host} - SSH Session` 
+                : 'SSH Terminal - Not Connected'}
+            </span>
+            {session?.connected && (
+              <span className="text-xs text-terminal-green">● Connected</span>
+            )}
           </div>
-        ))}
-        
-        <form onSubmit={handleSubmit} className="flex items-center mt-1">
-          <span className="text-terminal-green whitespace-pre">{getPrompt()}</span>
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            disabled={isConnecting}
-            className="flex-1 bg-transparent border-none outline-none text-foreground font-mono"
-            autoFocus
-            autoComplete="off"
-            spellCheck={false}
-          />
-          <span className="animate-blink text-terminal-green">█</span>
-        </form>
-      </div>
-    </div>
+          
+          <div 
+            ref={scrollRef}
+            className="flex-1 overflow-auto p-3 font-mono text-sm bg-background"
+          >
+            {lines.map((line, index) => (
+              <div 
+                key={index} 
+                className={`whitespace-pre-wrap ${getLineColor(line.type)}`}
+              >
+                {line.content}
+              </div>
+            ))}
+            
+            <form onSubmit={handleSubmit} className="flex items-center mt-1">
+              <span className="text-terminal-green whitespace-pre">{getPrompt()}</span>
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={isConnecting}
+                className="flex-1 bg-transparent border-none outline-none text-foreground font-mono"
+                autoFocus
+                autoComplete="off"
+                spellCheck={false}
+              />
+              <span className="animate-blink text-terminal-green">█</span>
+            </form>
+          </div>
+        </div>
+      </TabsContent>
+
+      <TabsContent value="live">
+        <div className="bg-background border border-border rounded-lg overflow-hidden flex flex-col">
+          <div className="bg-muted px-3 py-2 border-b border-border flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Globe className="h-4 w-4 text-terminal-green" />
+              <span className="text-xs font-mono text-terminal-gray">Live SSH Client</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {SSH_SERVICES.map((svc) => (
+                <Button
+                  key={svc.name}
+                  variant={selectedService.name === svc.name ? 'default' : 'outline'}
+                  size="sm"
+                  className="text-xs h-7"
+                  onClick={() => {
+                    setSelectedService(svc);
+                    setShowLiveSSH(false);
+                  }}
+                >
+                  {svc.name}
+                </Button>
+              ))}
+              <a
+                href={selectedService.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-terminal-cyan hover:underline flex items-center gap-1"
+              >
+                Open in new tab <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
+          </div>
+
+          {!showLiveSSH ? (
+            <div className="h-[500px] flex flex-col items-center justify-center gap-4 p-6 text-center">
+              <Terminal className="h-12 w-12 text-terminal-green opacity-60" />
+              <div>
+                <h3 className="text-lg font-semibold mb-1">{selectedService.name}</h3>
+                <p className="text-sm text-terminal-gray max-w-md">
+                  {selectedService.description}. Click below to load the SSH client. You can connect to any server with your credentials.
+                </p>
+              </div>
+              <Button 
+                onClick={() => setShowLiveSSH(true)} 
+                className="flex items-center gap-2"
+              >
+                <Play className="h-4 w-4" />
+                Launch SSH Client
+              </Button>
+              <p className="text-xs text-muted-foreground max-w-sm">
+                This loads an external SSH web client in an iframe. Your credentials are sent directly to the target server, not through our site.
+              </p>
+            </div>
+          ) : (
+            <iframe
+              src={selectedService.url}
+              className="w-full h-[500px] border-0"
+              title={`${selectedService.name} SSH Client`}
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+            />
+          )}
+        </div>
+      </TabsContent>
+    </Tabs>
   );
 }
