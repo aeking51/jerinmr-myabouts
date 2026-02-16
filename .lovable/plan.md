@@ -8,7 +8,7 @@ Remove the demo/simulated terminal tab entirely and replace it with a single-vie
 ## Changes
 
 ### File: `src/components/SSHTerminal.tsx`
-- **Remove all demo terminal code**: Delete the `TerminalLine`, `SSHSession` interfaces, `FAKE_FILES`, `FILE_CONTENTS`, `ASCII_BANNER` constants, and all simulated command processing logic (lines 8-503).
+- **Remove all demo terminal code**: Delete the `TerminalLine`, `SSHSession` interfaces, `FAKE_FILES`, `FILE_CONTENTS`, `ASCII_BANNER` constants, and all simulated command processing logic.
 - **Remove the Tabs wrapper**: No more Demo/Live tabs -- the component will show a single view.
 - **Add a Guidelines and Safety section** before the "Launch SSH Client" button:
   - **What this does**: Brief explanation that this connects to a third-party web SSH client.
