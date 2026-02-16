@@ -3,6 +3,16 @@ import { ExternalLink, Globe, Terminal, Play, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const SSH_SERVICES = [
   { name: 'serFISH', url: 'https://www.serfish.com/console/', description: 'Free browser-based SSH client, no account required' },
@@ -13,6 +23,37 @@ export function SSHTerminal() {
   const [selectedService, setSelectedService] = useState(SSH_SERVICES[0]);
   const [showLiveSSH, setShowLiveSSH] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
+  const [pendingService, setPendingService] = useState<typeof SSH_SERVICES[0] | null>(null);
+  const [showExitWarning, setShowExitWarning] = useState(false);
+
+  const handleServiceSwitch = (svc: typeof SSH_SERVICES[0]) => {
+    if (showLiveSSH && svc.name !== selectedService.name) {
+      setPendingService(svc);
+    } else {
+      setSelectedService(svc);
+    }
+  };
+
+  const confirmSwitch = () => {
+    if (pendingService) {
+      setSelectedService(pendingService);
+      setShowLiveSSH(false);
+      setAcknowledged(false);
+      setPendingService(null);
+    }
+  };
+
+  const handleExit = () => {
+    if (showLiveSSH) {
+      setShowExitWarning(true);
+    }
+  };
+
+  const confirmExit = () => {
+    setShowLiveSSH(false);
+    setAcknowledged(false);
+    setShowExitWarning(false);
+  };
 
   return (
     <div className="bg-background border border-border rounded-lg overflow-hidden flex flex-col">
@@ -29,14 +70,21 @@ export function SSHTerminal() {
               variant={selectedService.name === svc.name ? 'default' : 'outline'}
               size="sm"
               className="text-xs h-7"
-              onClick={() => {
-                setSelectedService(svc);
-                setShowLiveSSH(false);
-              }}
+              onClick={() => handleServiceSwitch(svc)}
             >
               {svc.name}
             </Button>
           ))}
+          {showLiveSSH && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs h-7 text-destructive border-destructive/30 hover:bg-destructive/10"
+              onClick={handleExit}
+            >
+              Exit Session
+            </Button>
+          )}
           <a
             href={selectedService.url}
             target="_blank"
@@ -50,7 +98,6 @@ export function SSHTerminal() {
 
       {!showLiveSSH ? (
         <div className="p-6 space-y-5">
-          {/* What this does */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Terminal className="h-5 w-5 text-terminal-green" />
@@ -62,7 +109,6 @@ export function SSHTerminal() {
             </p>
           </div>
 
-          {/* Safety Concerns */}
           <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
             <ShieldAlert className="h-4 w-4" />
             <AlertTitle className="text-sm font-semibold">Safety &amp; Security Concerns</AlertTitle>
@@ -77,14 +123,12 @@ export function SSHTerminal() {
             </AlertDescription>
           </Alert>
 
-          {/* Recommended Use */}
           <div className="rounded-md border border-border bg-muted/50 p-3">
             <p className="text-xs text-muted-foreground">
               <strong className="text-foreground">Recommended use:</strong> Learning, testing, or connecting to non-critical / sandbox servers only.
             </p>
           </div>
 
-          {/* Acknowledgment */}
           <div className="flex items-start gap-2">
             <Checkbox
               id="acknowledge-risks"
@@ -97,7 +141,6 @@ export function SSHTerminal() {
             </label>
           </div>
 
-          {/* Launch */}
           <Button
             onClick={() => setShowLiveSSH(true)}
             disabled={!acknowledged}
@@ -115,6 +158,42 @@ export function SSHTerminal() {
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         />
       )}
+
+      {/* Warning when switching services */}
+      <AlertDialog open={!!pendingService} onOpenChange={(open) => !open && setPendingService(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Switch SSH Client?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your current SSH session will be terminated. Any active connections will be lost and cannot be recovered. Are you sure you want to switch to {pendingService?.name}?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmSwitch} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Switch &amp; Disconnect
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Warning when exiting */}
+      <AlertDialog open={showExitWarning} onOpenChange={setShowExitWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Exit SSH Session?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your current SSH session will be terminated. Any active connections and unsaved work will be lost. Are you sure you want to exit?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmExit} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Exit Session
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
