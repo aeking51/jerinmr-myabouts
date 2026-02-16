@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const SSH_SERVICES = [
-  { name: 'ShellNGN', url: 'https://shellngn.com/', description: 'Full-featured web SSH client' },
+  { name: 'WebSSH', url: 'https://webssh.net/', description: 'Free web SSH client — no login required' },
   { name: 'Sshwifty', url: 'https://sshwifty-demo.nirui.org/', description: 'Open-source web SSH & Telnet client' },
 ];
 
