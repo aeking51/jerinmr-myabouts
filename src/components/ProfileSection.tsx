@@ -1,40 +1,39 @@
-import { User, MapPin, Mail, Phone, Linkedin } from 'lucide-react';
+import { memo } from 'react';
+import { MapPin, Mail, Phone, Linkedin } from 'lucide-react';
 import { NewsRibbon } from './NewsRibbon';
 import { QuickLinksColumn } from './QuickLinksColumn';
 
-export function ProfileSection() {
-
+export const ProfileSection = memo(function ProfileSection() {
   return (
-    <div className="space-y-4">
+    <section className="space-y-4" aria-label="Profile overview">
       <div className="border border-terminal-green p-3 sm:p-4 bg-card/50">
         <div className="flex flex-col lg:flex-row gap-4">
-          {/* Main Profile Content */}
           <div className="flex-1 space-y-4">
             <div className="space-y-2">
               <div className="font-mono">
-                <div className="text-terminal-green text-lg sm:text-xl font-bold">Jerin M R</div>
-                <div className="text-terminal-cyan text-base sm:text-lg">Entry-Level IT Professional</div>
-                <div className="text-terminal-gray text-sm sm:text-base">Networking & Server Administration</div>
+                <h1 className="text-terminal-green text-lg sm:text-xl font-bold">Jerin M R</h1>
+                <p className="text-terminal-cyan text-base sm:text-lg">Entry-Level IT Professional</p>
+                <p className="text-terminal-gray text-sm sm:text-base">Networking & Server Administration</p>
               </div>
               
-              <div className="text-xs sm:text-sm space-y-1 font-mono">
+              <address className="text-xs sm:text-sm space-y-1 font-mono not-italic">
                 <div className="flex items-center gap-1 sm:gap-2 text-terminal-amber">
-                  <MapPin className="w-3 h-3 flex-shrink-0" />
+                  <MapPin className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
                   <span>Thrissur, Kerala</span>
                 </div>
                 <div className="flex items-center gap-1 sm:gap-2 text-terminal-cyan">
-                  <Mail className="w-3 h-3 flex-shrink-0" />
-                  <span className="break-all">jerinmr@hotmail.com</span>
+                  <Mail className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
+                  <a href="mailto:jerinmr@hotmail.com" className="break-all hover:underline">jerinmr@hotmail.com</a>
                 </div>
                 <div className="flex items-center gap-1 sm:gap-2 text-terminal-blue">
-                  <Phone className="w-3 h-3 flex-shrink-0" />
-                  <span>8848158987</span>
+                  <Phone className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
+                  <a href="tel:+918848158987" className="hover:underline">8848158987</a>
                 </div>
                 <div className="flex items-center gap-1 sm:gap-2 text-terminal-magenta">
-                  <Linkedin className="w-3 h-3 flex-shrink-0" />
-                  <span className="break-all">linkedin.com/in/jerinmr51</span>
+                  <Linkedin className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
+                  <a href="https://linkedin.com/in/jerinmr51" target="_blank" rel="noopener noreferrer" className="break-all hover:underline">linkedin.com/in/jerinmr51</a>
                 </div>
-              </div>
+              </address>
             </div>
           
             <div className="mt-4 pt-4 border-t border-terminal-gray/30">
@@ -46,7 +45,6 @@ export function ProfileSection() {
             </div>
           </div>
 
-          {/* Quick Links Column */}
           <div className="lg:w-48 lg:border-l lg:border-terminal-gray/30 lg:pl-4">
             <QuickLinksColumn />
           </div>
@@ -54,6 +52,6 @@ export function ProfileSection() {
         
         <NewsRibbon />
       </div>
-    </div>
+    </section>
   );
-}
+});
