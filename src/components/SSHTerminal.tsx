@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ExternalLink, Globe, Terminal, Play, ShieldAlert } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -62,6 +63,12 @@ export function SSHTerminal() {
         <div className="flex items-center gap-2">
           <Globe className="h-4 w-4 text-terminal-green" />
           <span className="text-xs font-mono text-terminal-gray">Web SSH Client</span>
+          {showLiveSSH && (
+            <Badge variant="outline" className="text-[10px] h-5 px-1.5 gap-1 border-terminal-green/50 text-terminal-green font-mono animate-pulse">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-terminal-green" />
+              LIVE — {selectedService.name}
+            </Badge>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {SSH_SERVICES.map((svc) => (
