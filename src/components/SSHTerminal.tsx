@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ExternalLink, Globe, Terminal, Play, ShieldAlert } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { ExternalLink, Globe, Terminal, Play, ShieldAlert, Clock, History, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -20,12 +20,86 @@ const SSH_SERVICES = [
   { name: 'Sshwifty', url: 'https://sshwifty-demo.nirui.org/', description: 'Open-source web SSH & Telnet client' },
 ];
 
+interface SessionRecord {
+  id: number;
+  service: string;
+  startedAt: Date;
+  endedAt: Date | null;
+  duration: string;
+}
+
+function formatDuration(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) return `${h}h ${m}m ${s}s`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
+}
+
+function formatTime(date: Date): string {
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
 export function SSHTerminal() {
   const [selectedService, setSelectedService] = useState(SSH_SERVICES[0]);
   const [showLiveSSH, setShowLiveSSH] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
   const [pendingService, setPendingService] = useState<typeof SSH_SERVICES[0] | null>(null);
   const [showExitWarning, setShowExitWarning] = useState(false);
+
+  // Session timer
+  const [elapsed, setElapsed] = useState(0);
+  const sessionStartRef = useRef<Date | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Session history
+  const [sessionHistory, setSessionHistory] = useState<SessionRecord[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const sessionIdRef = useRef(0);
+
+  const startTimer = useCallback(() => {
+    sessionStartRef.current = new Date();
+    setElapsed(0);
+    timerRef.current = setInterval(() => {
+      setElapsed((prev) => prev + 1);
+    }, 1000);
+  }, []);
+
+  const stopTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    const endTime = new Date();
+    if (sessionStartRef.current) {
+      const durationSec = Math.floor((endTime.getTime() - sessionStartRef.current.getTime()) / 1000);
+      setSessionHistory((prev) => [
+        {
+          id: ++sessionIdRef.current,
+          service: selectedService.name,
+          startedAt: sessionStartRef.current!,
+          endedAt: endTime,
+          duration: formatDuration(durationSec),
+        },
+        ...prev,
+      ]);
+    }
+    sessionStartRef.current = null;
+    setElapsed(0);
+  }, [selectedService.name]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
+  const handleLaunch = () => {
+    setShowLiveSSH(true);
+    startTimer();
+  };
 
   const handleServiceSwitch = (svc: typeof SSH_SERVICES[0]) => {
     if (showLiveSSH && svc.name !== selectedService.name) {
@@ -37,6 +111,7 @@ export function SSHTerminal() {
 
   const confirmSwitch = () => {
     if (pendingService) {
+      stopTimer();
       setSelectedService(pendingService);
       setShowLiveSSH(false);
       setAcknowledged(false);
@@ -51,15 +126,20 @@ export function SSHTerminal() {
   };
 
   const confirmExit = () => {
+    stopTimer();
     setShowLiveSSH(false);
     setAcknowledged(false);
     setShowExitWarning(false);
   };
 
+  const clearHistory = () => {
+    setSessionHistory([]);
+  };
+
   return (
     <div className="bg-background border border-border rounded-lg overflow-hidden flex flex-col">
       {/* Header */}
-      <div className="bg-muted px-3 py-2 border-b border-border flex items-center justify-between">
+      <div className="bg-muted px-3 py-2 border-b border-border flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <Globe className="h-4 w-4 text-terminal-green" />
           <span className="text-xs font-mono text-terminal-gray">Web SSH Client</span>
@@ -69,8 +149,23 @@ export function SSHTerminal() {
               LIVE — {selectedService.name}
             </Badge>
           )}
+          {showLiveSSH && (
+            <Badge variant="outline" className="text-[10px] h-5 px-1.5 gap-1 border-terminal-cyan/50 text-terminal-cyan font-mono">
+              <Clock className="h-3 w-3" />
+              {formatDuration(elapsed)}
+            </Badge>
+          )}
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant={showHistory ? 'default' : 'outline'}
+            size="sm"
+            className="text-xs h-7 gap-1"
+            onClick={() => setShowHistory(!showHistory)}
+          >
+            <History className="h-3 w-3" />
+            History{sessionHistory.length > 0 && ` (${sessionHistory.length})`}
+          </Button>
           {SSH_SERVICES.map((svc) => (
             <Button
               key={svc.name}
@@ -102,6 +197,37 @@ export function SSHTerminal() {
           </a>
         </div>
       </div>
+
+      {/* Session History Panel */}
+      {showHistory && (
+        <div className="border-b border-border bg-muted/30 px-3 py-2 max-h-40 overflow-y-auto">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-mono text-terminal-gray flex items-center gap-1">
+              <History className="h-3 w-3" /> Session History
+            </span>
+            {sessionHistory.length > 0 && (
+              <Button variant="ghost" size="sm" className="text-xs h-6 gap-1 text-muted-foreground hover:text-destructive" onClick={clearHistory}>
+                <Trash2 className="h-3 w-3" /> Clear
+              </Button>
+            )}
+          </div>
+          {sessionHistory.length === 0 ? (
+            <p className="text-xs text-muted-foreground italic">No sessions recorded yet.</p>
+          ) : (
+            <div className="space-y-1">
+              {sessionHistory.map((session) => (
+                <div key={session.id} className="flex items-center gap-3 text-xs font-mono py-1 px-2 rounded bg-muted/50 border border-border/50">
+                  <Badge variant="outline" className="text-[10px] h-5 px-1.5 border-terminal-cyan/30 text-terminal-cyan">{session.service}</Badge>
+                  <span className="text-muted-foreground">{formatTime(session.startedAt)}</span>
+                  <span className="text-muted-foreground">→</span>
+                  <span className="text-muted-foreground">{session.endedAt ? formatTime(session.endedAt) : '—'}</span>
+                  <Badge variant="outline" className="text-[10px] h-5 px-1.5 border-terminal-green/30 text-terminal-green">{session.duration}</Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {!showLiveSSH ? (
         <div className="p-6 space-y-5">
@@ -149,7 +275,7 @@ export function SSHTerminal() {
           </div>
 
           <Button
-            onClick={() => setShowLiveSSH(true)}
+            onClick={handleLaunch}
             disabled={!acknowledged}
             className="flex items-center gap-2 w-full"
           >
