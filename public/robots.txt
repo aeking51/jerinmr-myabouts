@@ -16,4 +16,4 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 
-Sitemap: https://jerinmr-myabouts.lovable.app/sitemap.xml
+Sitemap: https://nniupihrctnzzqrkbubc.supabase.co/functions/v1/sitemap
