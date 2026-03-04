@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
       .eq('published', true)
       .order('updated_at', { ascending: false });
 
-    const siteUrl = 'https://jerinmr-myabouts.lovable.app';
+    const siteUrl = 'https://www.jerinmr.com';
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
