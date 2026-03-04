@@ -2,17 +2,11 @@
 
 ## Project info
 
-**URL**: https://jerinmr-myabouts.vercel.app
+**URL**: https://www.jerinmr.com
 
 ## How can I edit this code?
 
 There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/12bc3eb9-79ff-4e15-907d-a8bd949dd83e) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
