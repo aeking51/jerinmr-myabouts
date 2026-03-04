@@ -127,7 +127,7 @@ export function NetworkToolsSection() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   placeholder="Enter URL (e.g., google.com)"
                   value={pingUrl}
@@ -135,19 +135,21 @@ export function NetworkToolsSection() {
                   onKeyPress={(e) => e.key === 'Enter' && handlePing()}
                   disabled={loading === 'ping'}
                 />
-                <Button onClick={handlePing} disabled={loading === 'ping' || !pingUrl.trim()}>
-                  {loading === 'ping' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Ping'}
-                </Button>
-                {pingResults.length > 0 && (
-                  <Button 
-                    variant="outline" 
-                    size="icon"
-                    onClick={() => setPingResults([])}
-                    title="Clear history"
-                  >
-                    <Trash2 className="h-4 w-4" />
+                <div className="flex gap-2">
+                  <Button onClick={handlePing} disabled={loading === 'ping' || !pingUrl.trim()} className="flex-1 sm:flex-none">
+                    {loading === 'ping' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Ping'}
                   </Button>
-                )}
+                  {pingResults.length > 0 && (
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      onClick={() => setPingResults([])}
+                      title="Clear history"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
 
               {pingResults.length > 0 && (
@@ -204,7 +206,7 @@ export function NetworkToolsSection() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   placeholder="Enter domain (e.g., google.com)"
                   value={dnsQuery}
@@ -212,19 +214,21 @@ export function NetworkToolsSection() {
                   onKeyPress={(e) => e.key === 'Enter' && handleDnsLookup()}
                   disabled={loading === 'dns'}
                 />
-                <Button onClick={handleDnsLookup} disabled={loading === 'dns' || !dnsQuery.trim()}>
-                  {loading === 'dns' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Lookup'}
-                </Button>
-                {dnsHistory.length > 0 && (
-                  <Button 
-                    variant="outline" 
-                    size="icon"
-                    onClick={() => setDnsHistory([])}
-                    title="Clear history"
-                  >
-                    <Trash2 className="h-4 w-4" />
+                <div className="flex gap-2">
+                  <Button onClick={handleDnsLookup} disabled={loading === 'dns' || !dnsQuery.trim()} className="flex-1 sm:flex-none">
+                    {loading === 'dns' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Lookup'}
                   </Button>
-                )}
+                  {dnsHistory.length > 0 && (
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      onClick={() => setDnsHistory([])}
+                      title="Clear history"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
 
               {dnsHistory.length > 0 && (
@@ -285,7 +289,7 @@ export function NetworkToolsSection() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   placeholder="Enter IP address (leave empty for your IP)"
                   value={ipLookup}
@@ -293,19 +297,21 @@ export function NetworkToolsSection() {
                   onKeyPress={(e) => e.key === 'Enter' && handleIpLookup()}
                   disabled={loading === 'ip'}
                 />
-                <Button onClick={handleIpLookup} disabled={loading === 'ip'}>
-                  {loading === 'ip' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Lookup'}
-                </Button>
-                {ipHistory.length > 0 && (
-                  <Button 
-                    variant="outline" 
-                    size="icon"
-                    onClick={() => setIpHistory([])}
-                    title="Clear history"
-                  >
-                    <Trash2 className="h-4 w-4" />
+                <div className="flex gap-2">
+                  <Button onClick={handleIpLookup} disabled={loading === 'ip'} className="flex-1 sm:flex-none">
+                    {loading === 'ip' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Lookup'}
                   </Button>
-                )}
+                  {ipHistory.length > 0 && (
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      onClick={() => setIpHistory([])}
+                      title="Clear history"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
 
               {ipHistory.length > 0 && (

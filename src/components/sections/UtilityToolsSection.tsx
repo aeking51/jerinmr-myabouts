@@ -452,12 +452,12 @@ export function UtilityToolsSection() {
       </div>
 
       <Tabs defaultValue="base64" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="base64">Base64</TabsTrigger>
-          <TabsTrigger value="hash">Hash</TabsTrigger>
-          <TabsTrigger value="json">JSON</TabsTrigger>
-          <TabsTrigger value="website">Site Monitor</TabsTrigger>
-          <TabsTrigger value="ssh" className="flex items-center gap-1">
+        <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5">
+          <TabsTrigger value="base64" className="text-xs sm:text-sm">Base64</TabsTrigger>
+          <TabsTrigger value="hash" className="text-xs sm:text-sm">Hash</TabsTrigger>
+          <TabsTrigger value="json" className="text-xs sm:text-sm">JSON</TabsTrigger>
+          <TabsTrigger value="website" className="text-xs sm:text-sm col-span-1">Monitor</TabsTrigger>
+          <TabsTrigger value="ssh" className="flex items-center gap-1 text-xs sm:text-sm col-span-1">
             <Terminal className="h-3 w-3" />
             SSH
           </TabsTrigger>
