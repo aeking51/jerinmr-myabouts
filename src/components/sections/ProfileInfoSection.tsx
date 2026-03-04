@@ -245,11 +245,11 @@ Practical Labs:
                 <div className="text-muted-foreground">│   ├── {subcategory.name}</div>
               )}
               {subcategory.skills.map((skill, skillIndex) => (
-                <div key={skillIndex} className="ml-8 flex items-center gap-3">
-                  <span className="text-muted-foreground min-w-0 flex-shrink">
-                    │   │   {skillIndex === subcategory.skills.length - 1 ? '└──' : '├──'} {skill.name}
+                <div key={skillIndex} className="ml-2 sm:ml-8 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                  <span className="text-muted-foreground min-w-0 text-xs sm:text-sm truncate">
+                    {skillIndex === subcategory.skills.length - 1 ? '└──' : '├──'} {skill.name}
                   </span>
-                  <div className="flex-1 max-w-[200px] min-w-[120px]">
+                  <div className="flex-1 max-w-[200px] min-w-[100px] ml-4 sm:ml-0">
                     {renderSkillBar(skill.level)}
                   </div>
                 </div>
@@ -286,7 +286,7 @@ Practical Labs:
       <div className="space-y-4">
         <div className="space-y-2">
           <div className="text-primary font-mono text-sm">user@portfolio:~$ ls -la skills/</div>
-          <div className="bg-terminal-bg p-4 rounded-lg font-mono text-sm overflow-x-auto">
+          <div className="bg-terminal-bg p-2 sm:p-4 rounded-lg font-mono text-xs sm:text-sm overflow-x-auto">
             {skillsOutput}
           </div>
         </div>

@@ -262,6 +262,20 @@
     @apply bg-background text-foreground;
     font-family: 'Fira Code', 'Ubuntu Mono', 'Courier New', monospace;
     font-weight: 400;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Improved scrollbar for mobile */
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--terminal-green) / 0.3);
+    border-radius: 2px;
   }
 
   /* Heading font weights for visual hierarchy */
