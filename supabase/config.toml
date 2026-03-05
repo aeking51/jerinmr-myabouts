@@ -2,3 +2,15 @@ project_id = "nniupihrctnzzqrkbubc"
 
 [functions.sitemap]
 verify_jwt = false
+
+[functions.send-contact-message]
+verify_jwt = false
+
+[functions.dns-lookup]
+verify_jwt = false
+
+[functions.fetch-headers]
+verify_jwt = false
+
+[functions.check-ssl]
+verify_jwt = false

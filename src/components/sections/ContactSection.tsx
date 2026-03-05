@@ -3,7 +3,9 @@ import { TerminalPrompt } from '../TerminalPrompt';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
-import { Send, Mail, Phone, MapPin, Linkedin, Github } from 'lucide-react';
+import { Send, Mail, Phone, MapPin, Linkedin } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export function ContactSection() {
   const [message, setMessage] = useState('');
@@ -52,23 +54,28 @@ Optimal Contact Times:
 • Note: Weekend availability limited
 `;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitted) return;
     setSubmitted(true);
 
-    const recipient = 'jerinmr@hotmail.com';
-    const subject = encodeURIComponent(`Message from ${name} via jerinmr.myabouts`);
-    const body = encodeURIComponent(
-      `Hi Jerin,\n\n${message}\n\n---\nFrom: ${name}\nEmail: ${email}`
-    );
-    window.open(`mailto:${recipient}?subject=${subject}&body=${body}`, '_self');
+    try {
+      const { data, error } = await supabase.functions.invoke('send-contact-message', {
+        body: { name: name.trim(), email: email.trim(), message: message.trim() },
+      });
 
-    setTimeout(() => {
+      if (error) throw error;
+
+      toast.success('Message sent successfully! You\'ll hear back within 24 hours.');
       setMessage('');
       setName('');
       setEmail('');
+    } catch (err) {
+      console.error('Contact form error:', err);
+      toast.error('Failed to send message. Please try emailing directly.');
+    } finally {
       setSubmitted(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -97,6 +104,7 @@ Optimal Contact Times:
                 className="font-mono bg-background border-terminal-gray"
                 placeholder="Enter your name"
                 required
+                maxLength={100}
               />
             </div>
             <div>
@@ -110,6 +118,7 @@ Optimal Contact Times:
                 className="font-mono bg-background border-terminal-gray"
                 placeholder="your.email@domain.com"
                 required
+                maxLength={255}
               />
             </div>
           </div>
@@ -124,6 +133,7 @@ Optimal Contact Times:
               className="font-mono bg-background border-terminal-gray min-h-[120px]"
               placeholder="Type your message here..."
               required
+              maxLength={2000}
             />
           </div>
           
@@ -138,7 +148,7 @@ Optimal Contact Times:
             </Button>
             
             <div className="text-sm text-terminal-gray font-mono">
-              {submitted ? 'Transmitting...' : `${message.length} characters`}
+              {submitted ? 'Transmitting...' : `${message.length}/2000`}
             </div>
           </div>
         </form>
