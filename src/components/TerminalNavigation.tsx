@@ -6,12 +6,12 @@ interface NavigationProps {
 }
 
 const commands = [
-  { id: 'home', command: 'cd ~', label: 'Home' },
-  { id: 'profile', command: 'cat profile/*', label: 'Profile' },
-  { id: 'articles', command: 'ls articles/', label: 'Articles' },
-  { id: 'contact', command: 'whois jerinmr', label: 'Contact' },
-  { id: 'network', command: 'netstat -a', label: 'Network Tools' },
-  { id: 'utilities', command: 'man utils', label: 'Utilities' },
+  { id: 'home', command: 'cd ~', mobileCommand: '~', label: 'Home' },
+  { id: 'profile', command: 'cat profile/*', mobileCommand: 'profile', label: 'Profile' },
+  { id: 'articles', command: 'ls articles/', mobileCommand: 'articles', label: 'Articles' },
+  { id: 'contact', command: 'whois jerinmr', mobileCommand: 'whois', label: 'Contact' },
+  { id: 'network', command: 'netstat -a', mobileCommand: 'netstat', label: 'Network Tools' },
+  { id: 'utilities', command: 'man utils', mobileCommand: 'utils', label: 'Utilities' },
 ] as const;
 
 export const TerminalNavigation = memo(function TerminalNavigation({ activeSection, onSectionChange }: NavigationProps) {
@@ -32,7 +32,8 @@ export const TerminalNavigation = memo(function TerminalNavigation({ activeSecti
               : 'text-terminal-gray hover:text-terminal-green hover:bg-secondary'
           }`}
         >
-          {cmd.command}
+          <span className="hidden sm:inline">{cmd.command}</span>
+          <span className="sm:hidden">{cmd.mobileCommand}</span>
         </button>
       ))}
     </nav>
