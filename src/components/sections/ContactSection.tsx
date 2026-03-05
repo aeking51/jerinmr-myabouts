@@ -55,14 +55,20 @@ Optimal Contact Times:
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    // Simulate terminal output
+
+    const recipient = 'jerinmr@hotmail.com';
+    const subject = encodeURIComponent(`Message from ${name} via jerinmr.myabouts`);
+    const body = encodeURIComponent(
+      `Hi Jerin,\n\n${message}\n\n---\nFrom: ${name}\nEmail: ${email}`
+    );
+    window.open(`mailto:${recipient}?subject=${subject}&body=${body}`, '_self');
+
     setTimeout(() => {
-      alert(`Message sent via terminal!\n\nFrom: ${name}\nEmail: ${email}\nMessage: ${message}\n\n[STATUS] Message queued for delivery\n[INFO] Response expected within 24 hours`);
       setMessage('');
       setName('');
       setEmail('');
       setSubmitted(false);
-    }, 1000);
+    }, 1500);
   };
 
   return (
