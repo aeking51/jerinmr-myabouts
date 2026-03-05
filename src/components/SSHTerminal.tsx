@@ -139,24 +139,35 @@ export function SSHTerminal() {
   return (
     <div className="bg-background border border-border rounded-lg overflow-hidden flex flex-col">
       {/* Header */}
-      <div className="bg-muted px-3 py-2 border-b border-border flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2">
-          <Globe className="h-4 w-4 text-terminal-green" />
-          <span className="text-xs font-mono text-terminal-gray">Web SSH Client</span>
-          {showLiveSSH && (
-            <Badge variant="outline" className="text-[10px] h-5 px-1.5 gap-1 border-terminal-green/50 text-terminal-green font-mono animate-pulse">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-terminal-green" />
-              LIVE — {selectedService.name}
-            </Badge>
-          )}
-          {showLiveSSH && (
-            <Badge variant="outline" className="text-[10px] h-5 px-1.5 gap-1 border-terminal-cyan/50 text-terminal-cyan font-mono">
-              <Clock className="h-3 w-3" />
-              {formatDuration(elapsed)}
-            </Badge>
-          )}
+      <div className="bg-muted px-3 py-2 border-b border-border space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Globe className="h-4 w-4 text-terminal-green flex-shrink-0" />
+            <span className="text-xs font-mono text-terminal-gray truncate">Web SSH</span>
+            {showLiveSSH && (
+              <Badge variant="outline" className="text-[10px] h-5 px-1.5 gap-1 border-terminal-green/50 text-terminal-green font-mono animate-pulse flex-shrink-0">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-terminal-green" />
+                LIVE
+              </Badge>
+            )}
+            {showLiveSSH && (
+              <Badge variant="outline" className="text-[10px] h-5 px-1.5 gap-1 border-terminal-cyan/50 text-terminal-cyan font-mono flex-shrink-0">
+                <Clock className="h-3 w-3" />
+                {formatDuration(elapsed)}
+              </Badge>
+            )}
+          </div>
+          <a
+            href={selectedService.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-terminal-cyan flex-shrink-0"
+            title="Open in new tab"
+          >
+            <ExternalLink className="h-4 w-4" />
+          </a>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
           <Button
             variant={showHistory ? 'default' : 'outline'}
             size="sm"
@@ -164,7 +175,8 @@ export function SSHTerminal() {
             onClick={() => setShowHistory(!showHistory)}
           >
             <History className="h-3 w-3" />
-            History{sessionHistory.length > 0 && ` (${sessionHistory.length})`}
+            <span className="hidden sm:inline">History{sessionHistory.length > 0 && ` (${sessionHistory.length})`}</span>
+            <span className="sm:hidden">{sessionHistory.length > 0 ? `(${sessionHistory.length})` : ''}</span>
           </Button>
           {SSH_SERVICES.map((svc) => (
             <Button
@@ -184,17 +196,9 @@ export function SSHTerminal() {
               className="text-xs h-7 text-destructive border-destructive/30 hover:bg-destructive/10"
               onClick={handleExit}
             >
-              Exit Session
+              Exit
             </Button>
           )}
-          <a
-            href={selectedService.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-terminal-cyan hover:underline flex items-center gap-1"
-          >
-            Open in new tab <ExternalLink className="h-3 w-3" />
-          </a>
         </div>
       </div>
 
