@@ -1,6 +1,19 @@
 import { TerminalPrompt } from '../TerminalPrompt';
 import { useSiteContentMap } from '@/hooks/useSiteContent';
 export function ProfileInfoSection() {
+  const { contentMap: profile } = useSiteContentMap('profile');
+  const { contentMap: about } = useSiteContentMap('about');
+
+  const name = profile['profile_name'] || 'Jerin M R';
+  const role = profile['profile_role'] || 'Entry-Level IT Professional';
+  const focus = profile['profile_focus'] || 'Networking, Server Administration, Cloud Infrastructure & Cybersecurity';
+  const philosophy = about['profile_philosophy'] || '';
+  const hobbies = about['profile_hobbies'] || '';
+  const interests = about['profile_interests'] || '';
+
+  const hobbiesList = hobbies.split(',').map(h => `• ${h.trim()}`).join('\n');
+  const interestsList = interests.split(',').map(i => `• ${i.trim()}`).join('\n');
+
   const skillsData = [
     {
       category: "Systems Administration",
