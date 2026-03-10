@@ -1,5 +1,5 @@
 import { TerminalPrompt } from '../TerminalPrompt';
-
+import { useSiteContentMap } from '@/hooks/useSiteContent';
 export function ProfileInfoSection() {
   const skillsData = [
     {
