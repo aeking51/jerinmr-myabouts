@@ -13,6 +13,7 @@ const AdminVisitors = lazy(() => import("./pages/AdminVisitors"));
 const AdminArticles = lazy(() => import("./pages/AdminArticles"));
 const AdminSiteInfo = lazy(() => import("./pages/AdminSiteInfo"));
 const AdminQuickLinks = lazy(() => import("./pages/AdminQuickLinks"));
+const AdminProfile = lazy(() => import("./pages/AdminProfile"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Article = lazy(() => import("./pages/Article"));
