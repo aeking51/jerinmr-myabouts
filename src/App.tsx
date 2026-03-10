@@ -50,6 +50,7 @@ const App = () => (
             <Route path="/admin/articles" element={<AdminArticles />} />
             <Route path="/admin/site-info" element={<AdminSiteInfo />} />
             <Route path="/admin/quick-links" element={<AdminQuickLinks />} />
+            <Route path="/admin/profile" element={<AdminProfile />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
