@@ -13,6 +13,7 @@ const AdminVisitors = lazy(() => import("./pages/AdminVisitors"));
 const AdminArticles = lazy(() => import("./pages/AdminArticles"));
 const AdminSiteInfo = lazy(() => import("./pages/AdminSiteInfo"));
 const AdminQuickLinks = lazy(() => import("./pages/AdminQuickLinks"));
+const AdminProfile = lazy(() => import("./pages/AdminProfile"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Article = lazy(() => import("./pages/Article"));
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/admin/articles" element={<AdminArticles />} />
             <Route path="/admin/site-info" element={<AdminSiteInfo />} />
             <Route path="/admin/quick-links" element={<AdminQuickLinks />} />
+            <Route path="/admin/profile" element={<AdminProfile />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

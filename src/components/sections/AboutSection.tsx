@@ -1,12 +1,26 @@
 import { TerminalPrompt } from '../TerminalPrompt';
+import { useSiteContentMap } from '@/hooks/useSiteContent';
 
 export function AboutSection() {
+  const { contentMap: profile } = useSiteContentMap('profile');
+  const { contentMap: about } = useSiteContentMap('about');
+
+  const name = profile['profile_name'] || 'Jerin M R';
+  const role = profile['profile_role'] || 'Entry-Level IT Professional';
+  const focus = profile['profile_focus'] || 'Networking, Server Administration, Cloud Infrastructure & Cybersecurity';
+  const philosophy = about['profile_philosophy'] || '';
+  const hobbies = about['profile_hobbies'] || '';
+  const interests = about['profile_interests'] || '';
+
+  const hobbiesList = hobbies.split(',').map(h => `• ${h.trim()}`).join('\n');
+  const interestsList = interests.split(',').map(i => `• ${i.trim()}`).join('\n');
+
   const aboutOutput = `
 ╭─ Personal Information ─────────────────────────────────────────────╮
 │                                                                    │
-│  Name: Jerin M R                                                   │
-│  Role: Entry-Level IT Professional                                 │
-│  Focus: Networking, Server Administration, Cloud Infrastructure & Cybersecurity   │
+│  Name: ${name.padEnd(51)}│
+│  Role: ${role.padEnd(51)}│
+│  Focus: ${focus.padEnd(50)}│
 │                                                                    │
 │                                                                    │
 ╰────────────────────────────────────────────────────────────────────╯
@@ -28,19 +42,13 @@ Education:
     └── Focus: Hardware & Network Essentials
 
 Personal Philosophy:
-"Technology is best when it brings people together and solves real-world 
-problems. I believe in continuous learning, hands-on experience, and 
-building reliable, secure systems that users can depend on."
+"${philosophy}"
 
 Hobbies:
-• Reading books
-• Gaming
-• Learning about universe
+${hobbiesList}
 
 Interests:
-• Network security and ethical hacking
-• Open-source technologies and Linux systems
-• Contributing to tech communities
+${interestsList}
 `;
 
   return (
